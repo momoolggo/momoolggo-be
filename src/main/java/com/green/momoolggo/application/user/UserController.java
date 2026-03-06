@@ -1,4 +1,4 @@
-package com.green.momoolggo.user;
+package com.green.momoolggo.application.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
