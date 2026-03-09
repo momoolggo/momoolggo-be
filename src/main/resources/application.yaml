@@ -15,7 +15,7 @@ constants:   # 커스텀 속성
 
 spring:
   application:
-    name= momoolggo
+    name: momoolggo
   config:
     import: "optional:file:.env[.properties]"
   datasource:
