@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    namespace = UserMapper 인터페이스 경로와 반드시 일치해야 함
+    MyBatis가 인터페이스 메서드 이름과 id를 매칭해서 SQL을 실행함
+-->
+<mapper namespace="com.green.momoolggo.application.user.UserMapper">
+
+    <!--
+        아이디로 유저 조회
+        MyBatis의 map-underscore-to-camel-case 설정 덕분에
+        user_no → userNo, user_id → userId, user_pw → userPw 자동 변환됨
+        #{userId} = UserSigninReq.getUserId() 값
+    -->
+    <select id="findByUserId" resultType="com.green.momoolggo.application.user.model.User">
+        SELECT user_no
+             , user_id
+             , user_pw
+             , role
+             , name
+             , birth
+             , gender
+             , green
+             , kind
+             , rank
+             , tel
+        FROM user
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>
