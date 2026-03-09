@@ -15,4 +15,5 @@ public class JwtUser {
     private long   signedUserNo;  // 로그인한 유저의 PK (user_no)
     private String role;          // CUSTOMER / OWNER / RIDER / ADMIN
     private String status;        // ACTIVE / PENDING / BLOCKED (현재 미사용, 확장용)
+    private String name;
 }

@@ -27,6 +27,10 @@ public class UserPrincipal implements UserDetails {
         return jwtUser.getRole();
     }
 
+    public String getName() {
+        return jwtUser.getName();
+    }
+
     // 권한 목록 반환
     // Spring Security의 hasRole("OWNER") 같은 검사에서 여기 값을 사용함
     // "ROLE_" 접두사를 붙여야 hasRole() 이 정상 동작함
