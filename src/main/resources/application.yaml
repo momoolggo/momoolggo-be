@@ -28,3 +28,7 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   mapper-locations: mappers/*.xml
+
+naver:
+  client-id: l1ytziijx9
+  client-secret: og3ooJJjUtk0Js9AHKgoNQuMCeg39M4kR390IJFY
