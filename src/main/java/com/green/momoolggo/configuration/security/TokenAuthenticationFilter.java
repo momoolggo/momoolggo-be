@@ -23,16 +23,19 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("req-uri: {}", request.getRequestURI()); //요청 주소가 로그에 출력
+        log.info("req-uri: {}", request.getRequestURI());
 
-        //쿠키에 AT가 없었다. null 리턴
-        //쿠키에 AT가 있었다 주소값이 넘어온다.
-        Authentication authentication = jwtTokenManager.getAuthentication(request);
-        log.info("authentication: {}", authentication);
-        if(authentication != null) {  //로그인 상태
-            SecurityContextHolder.getContext().setAuthentication(authentication); //시큐리티 인증처리가 완료!!
+        try {
+            Authentication authentication = jwtTokenManager.getAuthentication(request);
+            log.info("authentication: {}", authentication);
+            if(authentication != null) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            // 잘못된 JWT 토큰이 쿠키에 남아있어도 필터가 멈추지 않고 계속 진행
+            log.warn("JWT 인증 실패 (무시): {}", e.getMessage());
         }
-        //다음 필터에게 req, res 전달
+
         filterChain.doFilter(request, response);
     }
 }
