@@ -38,6 +38,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
                         .requestMatchers(HttpMethod.GET,  "/api/user/check-id").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user/join").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/address/**").permitAll()
 
                         // 가게/메뉴/카테고리/리뷰 조회는 비로그인도 가능
                         .requestMatchers(HttpMethod.GET, "/api/store").permitAll()
