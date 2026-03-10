@@ -1,13 +1,14 @@
 package com.green.momoolggo.application.owner;
 
 
-import com.green.momoolggo.application.owner.model.OwnerStoreRegReq;
-import com.green.momoolggo.application.owner.model.OwnerStoreUpdateReq;
-import com.green.momoolggo.application.owner.model.OwnerStoreUpdateStatusReq;
+import com.green.momoolggo.application.owner.model.*;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -31,11 +32,10 @@ public class OwnerService {
     }
 
     // 가게 운영정보 수정
-    public void updateStoreStatus(OwnerStoreUpdateStatusReq dto){
-        int result = ownerMapper.updateStoreStatus(dto);
-        if (result == 0){
-            throw new RuntimeException("운영 정보 수정 실패: 해당 가게를 찾을 수 없음");
-        }
+    @Transactional
+    public OwnerStoreRes updateStoreStatus(OwnerStoreUpdateStatusReq dto){
+        ownerMapper.updateStoreStatus(dto);
+        return ownerMapper.getStoreById(dto.getStoreId());
     }
 
     // 가게 삭제
@@ -46,6 +46,19 @@ public class OwnerService {
         }
     }
 
+    // 가게 주문 조회
+    public List<OwnerOrderRes> getOrders(Long storedId, Integer state){
+        return ownerMapper.getOrders(storedId, state);
+    }
+
+    // 주문 상태 수정
+
+    public void updateOrderState(OwnerOrderStateReq req){
+        int result = ownerMapper.updateOrderState(req);
+        if (result == 0){
+            throw new RuntimeException("주문 상태 변경 실패: 주문을 찾을 수 없습니다.");
+        }
+    }
 
 
 }

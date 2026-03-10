@@ -12,5 +12,5 @@ public class OwnerStoreUpdateStatusReq {
     private String holiday;
     private String notice; //가게 공지
     private String minPrice;
-    private int status;
+    private int state;
 }

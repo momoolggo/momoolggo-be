@@ -7,7 +7,7 @@
     <insert id="registerStore">
         INSERT INTO store( user_id, store_name, business_number,
                           location, store_pic, store_tel, store_info)
-                    VALUES ( #{userId}, #{storeName}, #{businessNumber}, #{address},
+                    VALUES ( #{userId}, #{storeName}, #{businessNumber}, #{location},
                             #{storePic}, #{tel}, #{storeInfo} )
     </insert>
 
@@ -19,26 +19,65 @@
             store_tel = #{storeTel},
             business_number = #{businessNumber},
             store_pic = #{storePic},
-            store_info = #{storeInfo},
+            store_info = #{storeInfo}
         WHERE store_id = #{storeId}
     </update>
 
     <!-- 가게 운영정보 수정 -->
-    <update id="updatedStoreStatus">
+    <update id="updateStoreStatus">
         UPDATE store
-        SET business_hours = #{businessHours},
-            holiday = #{holiday},
+        SET holiday = #{holiday},
             notice = #{notice},
-            min_price = #{minPrice},
-            status = #{status}
+            state = #{state}
         WHERE store_id = #{storeId}
     </update>
+
+    <select id="getStoreById" resultType="OwnerStoreRes">
+        SELECT
+            store_id AS storeId,
+            store_name AS storeName,
+            location,
+            store_tel AS storeTel,
+            business_number AS businessNumber,
+            store_pic AS storePic,
+            store_info AS storeInfo,
+            state,
+            holiday,
+            notice
+        FROM store
+        WHERE store_id = #{storeId}
+    </select>
 
     <!-- 가게 삭제 -->
     <delete id="deleteStore">
         DELETE FROM store
         WHERE store_id = #{storeId}
     </delete>
-    
+
+    <!-- 주문 목록 조회-->
+    <select id="getOrders" resultType="OwnerOrderRes">
+        SELECT
+            o.order_id AS orderId,
+            o.customer_name AS customerName,
+            o.order_time AS orderDate,
+            o.amount AS totalPrice,
+            o.state,
+            GROUP_CONCAT(m.menu_name SEPARATOR ', ') AS menulList
+        FROM orders o
+        JOIN order_detail od ON o.order_id = od.poder_id
+        JOIN o.store_id = #{storeId}
+        <if test="state != null and state != ''">
+            AND o.state = #{state}
+        </if>
+        GROUP BY o.order_id
+        GROUP BY o.order_time DESC
+    </select>
+
+    <!-- 주문 상태 수정(-->
+    <update id="updateOrderState">
+        UPDATE orders
+        SET state = #{state}
+        WHERE order_id = #{orderId}
+    </update>
     
 </mapper>
