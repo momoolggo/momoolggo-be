@@ -32,3 +32,4 @@ mybatis:
 naver:
   client-id: l1ytziijx9
   client-secret: og3ooJJjUtk0Js9AHKgoNQuMCeg39M4kR390IJFY
+  map-client-id: l1ytziijx9
