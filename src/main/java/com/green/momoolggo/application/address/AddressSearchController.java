@@ -19,4 +19,11 @@ public class AddressSearchController {
     public ResultResponse<List<AddressSearchRes>> search(@RequestParam String query) {
         return new ResultResponse<>("주소 검색 성공", addressSearchService.search(query));
     }
+
+    // ── Reverse Geocoding GET /api/address/reverse?lat=xx&lng=xx
+    @GetMapping("/reverse")
+    public ResultResponse<AddressSearchRes> reverse(@RequestParam double lat,
+                                                    @RequestParam double lng) {
+        return new ResultResponse<>("주소 변환 성공", addressSearchService.reverseGeocode(lat, lng));
+    }
 }
