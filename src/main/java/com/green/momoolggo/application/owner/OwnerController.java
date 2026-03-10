@@ -1,13 +1,13 @@
 package com.green.momoolggo.application.owner;
 
 
-import com.green.momoolggo.application.owner.model.OwnerStoreRegReq;
-import com.green.momoolggo.application.owner.model.OwnerStoreUpdateReq;
-import com.green.momoolggo.application.owner.model.OwnerStoreUpdateStatusReq;
+import com.green.momoolggo.application.owner.model.*;
 import com.green.momoolggo.configuration.model.ResultResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -35,9 +35,9 @@ public class OwnerController {
 
     // 가게 운영정보 수정(영업상태, 휴무일, 공지 등)
     @PutMapping("/store/status")
-    public ResultResponse<Void> updateStoreStatus(@RequestBody OwnerStoreUpdateStatusReq dto){
+    public ResultResponse<OwnerStoreRes> updateStoreStatus(@RequestBody OwnerStoreUpdateStatusReq dto){
         log.info("가게 운영관리 수정: {}", dto);
-        ownerService.updateStoreStatus(dto);
+        OwnerStoreRes updatedStore = ownerService.updateStoreStatus(dto);
         return new ResultResponse<>("운영정보 업데이트 완료", null);
     }
 
@@ -49,4 +49,33 @@ public class OwnerController {
         return new ResultResponse<>("가게 삭제 성공", null);
     }
 
+    //------------------------------------------------------------------------------------------------
+
+    // 가게 주문 조회
+    @ GetMapping("/order")
+    public ResultResponse<List<OwnerOrderRes>> getOrders(@RequestParam Long store_id,
+                                                         @RequestParam(required = false) Integer state){
+        log.info("주문 조회 요청: state_id = {}, state = {}", store_id, state);
+        List<OwnerOrderRes> list = ownerService.getOrders(store_id, state);
+        return new ResultResponse<>(String.format("%d건의 주문을 조회합니다.", list.size()),list);
+    }
+
+    // 주문 상태 수정
+    @PutMapping("/order/{order_id}")
+    public ResultResponse<Void> putOrderState(@PathVariable Long order_id,
+                                              @RequestBody OwnerOrderStateReq req){
+        log.info("주문 상태 요청: order_id = {}, state = {}", order_id, req.getOrderState());
+        req.setOrderId(order_id);
+        ownerService.updateOrderState(req);
+        return new ResultResponse<>("주문 상태 수정 성공", null);
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    // 가게 메뉴 등록 : 0311 가게메뉴 등록 시작하고 OwnerMenuRes 파일만들어야함
+
+
+    // 가게 메뉴 수정
+
+    // 가게 메뉴 삭제
 }

@@ -1,0 +1,14 @@
+package com.green.momoolggo.application.owner.model;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class OwnerMenuUpdateReq { //메뉴 수정
+    private long menuId;
+    private String name;
+    private String menuInfo;
+    private int price;
+    private String menuPic;
+}
