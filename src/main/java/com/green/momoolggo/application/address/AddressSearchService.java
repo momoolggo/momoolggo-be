@@ -26,7 +26,7 @@ public class AddressSearchService {
 
     public List<AddressSearchRes> search(String query) {
         String url = UriComponentsBuilder
-                .fromUriString("https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode")
+                .fromUriString("https://maps.apigw.ntruss.com/map-geocode/v2/geocode")
                 .queryParam("query", query)
                 .build()
                 .toUriString();
