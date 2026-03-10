@@ -5,7 +5,7 @@
 <mapper namespace="com.green.momoolggo.application.address.UserAddressMapper">
 
     <!-- 주소 추가 -->
-    <insert id="save" useGeneratedKeys="true" keyProperty="addressId">
+    <insert id="save">
         INSERT INTO address (user_no, address, address_detail, lat, lng, default_ad)
         VALUES (#{userNo}, #{address}, #{addressDetail}, #{lat}, #{lng}, #{defaultAd})
     </insert>

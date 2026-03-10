@@ -1,5 +1,7 @@
 package com.green.momoolggo.application.user;
 
+import com.green.momoolggo.application.address.UserAddressMapper;
+import com.green.momoolggo.application.address.model.UserAddressReq;
 import com.green.momoolggo.application.user.model.User;
 import com.green.momoolggo.application.user.model.UserSigninReq;
 import com.green.momoolggo.application.user.model.UserSigninRes;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -20,6 +23,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenManager jwtTokenManager;
+    private final UserAddressMapper userAddressMapper;
 
     // ── 아이디 중복확인
     public boolean checkId(String userId) {
@@ -27,14 +31,25 @@ public class UserService {
     }
 
     // ── 회원가입
+    @Transactional
     public void signup(UserSignupReq req) {
-        // 비밀번호 암호화
         req.setUserPw(passwordEncoder.encode(req.getUserPw()));
-        // role 기본값 처리
         if (req.getRole() == null || req.getRole().isBlank()) {
             req.setRole("CUSTOMER");
         }
         userMapper.signup(req);
+
+        // 주소가 있으면 address 테이블에도 저장
+        if (req.getAddress() != null && !req.getAddress().isBlank()) {
+            UserAddressReq addressReq = new UserAddressReq();
+            addressReq.setUserNo(req.getUserNo());
+            addressReq.setAddress(req.getAddress());
+            addressReq.setAddressDetail(req.getAddressDetail());
+            addressReq.setLat(req.getLat());
+            addressReq.setLng(req.getLng());
+            addressReq.setDefaultAd(1);  // 첫 주소는 기본주소
+            userAddressMapper.save(addressReq);
+        }
     }
 
     // ── 로그인

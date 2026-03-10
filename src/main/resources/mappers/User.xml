@@ -5,7 +5,7 @@
 <mapper namespace="com.green.momoolggo.application.user.UserMapper">
 
     <!-- 회원가입 -->
-    <insert id="signup">
+    <insert id="signup" useGeneratedKeys="true" keyProperty="userNo">
         INSERT INTO user (user_id, user_pw, name, gender, birth, tel, role)
         VALUES (#{userId}, #{userPw}, #{name}, #{gender}, #{birth}, #{tel}, #{role})
     </insert>
