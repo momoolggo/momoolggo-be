@@ -18,7 +18,8 @@ public class UserAddressService {
     // ── 주소 추가
     @Transactional
     public void save(long userNo, UserAddressReq req) {
-        // 기본주소로 설정할 경우 기존 기본주소 초기화
+        req.setUserNo(userNo);
+
         if (req.getDefaultAd() != null && req.getDefaultAd() == 1) {
             userAddressMapper.resetDefault(userNo);
         }

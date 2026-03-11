@@ -48,10 +48,19 @@
     <!-- 내 정보 수정 -->
     <update id="update">
         UPDATE user
-        SET name   = #{name}
-        , tel    = #{tel}
-        , gender = #{gender}
-        , birth  = #{birth}
+        SET user_no = user_no
+        <if test="name != null and name != ''">
+            , name = #{name}
+        </if>
+        <if test="tel != null and tel != ''">
+            , tel = #{tel}
+        </if>
+        <if test="gender != 0">
+            , gender = #{gender}
+        </if>
+        <if test="birth != null and birth != ''">
+            , birth = #{birth}
+        </if>
         <if test="userPw != null and userPw != ''">
             , user_pw = #{userPw}
         </if>
