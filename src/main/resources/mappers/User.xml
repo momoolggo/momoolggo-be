@@ -34,4 +34,28 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!-- 내 정보 조회 -->
+    <select id="findByUserNo" resultType="com.green.momoolggo.application.user.model.User">
+        SELECT user_id
+             , name
+             , tel
+             , gender
+             , birth
+        FROM user
+        WHERE user_no = #{userNo}
+    </select>
+
+    <!-- 내 정보 수정 -->
+    <update id="update">
+        UPDATE user
+        SET name   = #{name}
+        , tel    = #{tel}
+        , gender = #{gender}
+        , birth  = #{birth}
+        <if test="userPw != null and userPw != ''">
+            , user_pw = #{userPw}
+        </if>
+        WHERE user_no = #{userNo}
+    </update>
+
 </mapper>

@@ -2,6 +2,7 @@ package com.green.momoolggo.application.user;
 
 import com.green.momoolggo.application.user.model.User;
 import com.green.momoolggo.application.user.model.UserSignupReq;
+import com.green.momoolggo.application.user.model.UserUpdateReq;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -15,4 +16,8 @@ public interface UserMapper {
 
     // 아이디 중복확인
     int countByUserId(String userId);
+
+    User findByUserNo(Long userNo);
+
+    int update(UserUpdateReq req);
 }
