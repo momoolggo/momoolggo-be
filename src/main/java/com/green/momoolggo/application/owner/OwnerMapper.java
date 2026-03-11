@@ -29,4 +29,15 @@ public interface OwnerMapper {
 
     // 주문 상태 수정
     int updateOrderState(OwnerOrderStateReq req);
+
+    // 메뉴등록
+    int registerMenu(OwnerMenuRegReq dto);
+    // 등록 메뉴 상세조회 (menuId)
+    OwnerMenuRes getMenuById(Long menuId);
+
+    // 메뉴 수정
+    int updateMenu(OwnerMenuUpdateReq dto);
+
+    // 메뉴 삭제
+    int deleteMenu(Long menuId);
 }

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.plaf.PanelUI;
 import java.util.List;
 
 @Service
@@ -58,6 +59,32 @@ public class OwnerService {
         if (result == 0){
             throw new RuntimeException("주문 상태 변경 실패: 주문을 찾을 수 없습니다.");
         }
+    }
+
+    // 가게 메뉴 등록
+    public OwnerMenuRes registerMenu(OwnerMenuRegReq dto){
+        ownerMapper.registerMenu(dto);
+        return ownerMapper.getMenuById(dto.getMenuId());
+    }
+
+    // 가게 메뉴 수정
+    @Transactional
+    public OwnerMenuRes updateMenu(OwnerMenuUpdateReq dto){
+        int result = ownerMapper.updateMenu(dto);
+        if (result == 0) {
+            throw new RuntimeException("메뉴 수정 실패: 해당 메뉴를 찾을 수 없음");
+        }
+        return ownerMapper.getMenuById(dto.getMenuId());
+    }
+
+    // 가게 메뉴 삭제
+    @Transactional
+    public Long deleteMenu(Long menuId){
+        int result = ownerMapper.deleteMenu(menuId);
+        if (result == 0) {
+            throw new RuntimeException("메뉴 삭제 실패: 해당 메뉴를 찾을 수 없음");
+        }
+        return menuId;
     }
 
 

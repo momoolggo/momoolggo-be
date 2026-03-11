@@ -1,15 +1,16 @@
 package com.green.momoolggo.application.owner.model;
 
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class OwnerMenuRegReq { //메뉴 등록
-    private long storeId;
+public class OwnerMenuRes { //서버가 주는 최종 메뉴등록 결과
+    private Long menuId;
     private String name;
     private String menuInfo;
-    private int price;
+    private String price;
     private String menuPic;
-    private long menuId;
+
 }

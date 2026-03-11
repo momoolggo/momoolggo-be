@@ -32,7 +32,7 @@
         WHERE store_id = #{storeId}
     </update>
 
-    <select id="getStoreById" resultType="OwnerStoreRes">
+    <select id="getStoreById" resultType="com.green.momoolggo.application.owner.model.OwnerStoreRes">
         SELECT
             store_id AS storeId,
             store_name AS storeName,
@@ -55,7 +55,7 @@
     </delete>
 
     <!-- 주문 목록 조회-->
-    <select id="getOrders" resultType="OwnerOrderRes">
+    <select id="getOrders" resultType="com.green.momoolggo.application.owner.model.OwnerOrderRes">
         SELECT
             o.order_id AS orderId,
             o.customer_name AS customerName,
@@ -79,5 +79,41 @@
         SET state = #{state}
         WHERE order_id = #{orderId}
     </update>
+
+    <!-- 가게 메뉴 등록-->
+    <insert id="registerMenu" useGeneratedKeys="true" keyProperty="menuId">
+        INSERT INTO menu (store_id, name, menu_info, price, menu_pic)
+        VALUES (#{storeId}, #{name}, #{menuInfo}, #{price}, #{menuPic})
+    </insert>
+
+    <select id="getMenuById" resultType="com.green.momoolggo.application.owner.model.OwnerMenuRes">
+        SELECT
+            menu_id AS menuId,
+            name AS name,
+            menu_info AS menuInfo,
+            price,
+            menu_pic AS menuPic
+        FROM menu
+        WHERE menu_id = #{menuId}
+    </select>
+
+    <!-- 가게 메뉴 수정-->
+    <update id="updateMenu">
+        UPDATE menu
+        SET name = #{name},
+            menu_info = #{menuInfo},
+            price = #{price},
+            menu_pic = #{menuPic}
+        WHERE menu_id = #{menuId}
+    </update>
+
+    <!-- 가게 메뉴 삭제-->
+    <delete id="deleteMenu">
+        DELETE FROM menu
+        WHERE menu_id = #{menuId}
+    </delete>
+
+
+
     
 </mapper>
