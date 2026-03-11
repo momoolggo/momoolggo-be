@@ -3,15 +3,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.green.momoolggo.application.owner.OwnerMapper">
-    <!--가게등록-->
+
     <insert id="registerStore">
         INSERT INTO store( user_id, store_name, business_number,
-                          location, store_pic, store_tel, store_info)
-                    VALUES ( #{userId}, #{storeName}, #{businessNumber}, #{location},
-                            #{storePic}, #{tel}, #{storeInfo} )
+                           location, store_pic, store_tel, store_info)
+        VALUES ( #{userId}, #{storeName}, #{businessNumber}, #{location},
+                 #{storePic}, #{tel}, #{storeInfo} )
     </insert>
 
-    <!-- 가게 기본 정보 수정 -->
     <update id="updateStore">
         UPDATE store
         SET store_name = #{storeName},
@@ -23,7 +22,6 @@
         WHERE store_id = #{storeId}
     </update>
 
-    <!-- 가게 운영정보 수정 -->
     <update id="updateStoreStatus">
         UPDATE store
         SET holiday = #{holiday},
@@ -32,7 +30,7 @@
         WHERE store_id = #{storeId}
     </update>
 
-    <select id="getStoreById" resultType="OwnerStoreRes">
+    <select id="getStoreById" resultType="com.green.momoolggo.application.owner.model.OwnerStoreRes">
         SELECT
             store_id AS storeId,
             store_name AS storeName,
@@ -48,36 +46,33 @@
         WHERE store_id = #{storeId}
     </select>
 
-    <!-- 가게 삭제 -->
     <delete id="deleteStore">
         DELETE FROM store
         WHERE store_id = #{storeId}
     </delete>
 
-    <!-- 주문 목록 조회-->
-    <select id="getOrders" resultType="OwnerOrderRes">
+    <select id="getOrders" resultType="com.green.momoolggo.application.owner.model.OwnerOrderRes">
         SELECT
-            o.order_id AS orderId,
-            o.customer_name AS customerName,
-            o.order_time AS orderDate,
-            o.amount AS totalPrice,
-            o.state,
-            GROUP_CONCAT(m.menu_name SEPARATOR ', ') AS menulList
+        o.order_id AS orderId,
+        o.customer_name AS customerName,
+        o.order_time AS orderDate,
+        o.amount AS totalPrice,
+        o.state,
+        GROUP_CONCAT(od.menu_name SEPARATOR ', ') AS menuList
         FROM orders o
-        JOIN order_detail od ON o.order_id = od.poder_id
-        JOIN o.store_id = #{storeId}
-        <if test="state != null and state != ''">
+        JOIN order_detail od ON o.order_id = od.order_id
+        WHERE o.store_id = #{storeId}
+        <if test="state != null">
             AND o.state = #{state}
         </if>
         GROUP BY o.order_id
-        GROUP BY o.order_time DESC
+        ORDER BY o.order_time DESC
     </select>
 
-    <!-- 주문 상태 수정(-->
     <update id="updateOrderState">
         UPDATE orders
         SET state = #{state}
         WHERE order_id = #{orderId}
     </update>
-    
+
 </mapper>
