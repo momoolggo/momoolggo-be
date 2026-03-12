@@ -44,4 +44,9 @@ public class UserAddressService {
     public void delete(long addressId) {
         userAddressMapper.delete(addressId);
     }
+
+    // 기본 배송지로 수정
+    public void setDefault(long userNo, long addressId) {
+        userAddressMapper.setDefault(userNo, addressId);
+    }
 }
