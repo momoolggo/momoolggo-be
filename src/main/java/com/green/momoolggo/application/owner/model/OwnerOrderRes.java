@@ -8,11 +8,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class OwnerOrderRes { // 주문 리스트 조회용
+public class OwnerOrderRes {
     private Long orderId;
-    private String customerName;
+    private Long userNo;        // customerName -> userNo 로 변경
     private String orderDate;
     private List<String> menuList;
     private int totalPrice;
-    private int orderState;
+    private String state;       // orderState(int) -> state(String) 로 변경 (DB가 PENDING, WATING 문자열이라서)
 }

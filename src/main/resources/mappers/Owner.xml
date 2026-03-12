@@ -72,20 +72,20 @@
     <!-- 주문 목록 조회-->
     <select id="getOrders" resultType="com.green.momoolggo.application.owner.model.OwnerOrderRes">
         SELECT
-            o.order_id AS orderId,
-            o.customer_name AS customerName,
-            o.order_time AS orderDate,
-            o.amount AS totalPrice,
-            o.state,
-            GROUP_CONCAT(m.menu_name SEPARATOR ', ') AS menulList
+        o.order_id AS orderId,
+        o.user_no AS userNo,
+        o.order_time AS orderDate,
+        o.amount AS totalPrice,
+        o.state,
+        GROUP_CONCAT(od.menu_name SEPARATOR ', ') AS menuList
         FROM orders o
-        JOIN order_detail od ON o.order_id = od.poder_id
-        JOIN o.store_id = #{storeId}
+        JOIN order_detail od ON o.order_id = od.order_id
+        WHERE o.store_id = #{storeId}
         <if test="state != null and state != ''">
             AND o.state = #{state}
         </if>
         GROUP BY o.order_id
-        GROUP BY o.order_time DESC
+        ORDER BY o.order_time DESC
     </select>
 
     <!-- 주문 상태 수정(-->
