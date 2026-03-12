@@ -1,5 +1,6 @@
 package com.green.momoolggo.application.store;
 
+import com.green.momoolggo.application.store.model.MenuGetRes;
 import com.green.momoolggo.application.store.model.StoreGetReq;
 import com.green.momoolggo.application.store.model.StoreGetRes;
 import com.green.momoolggo.application.store.model.StoreOneGetRes;
@@ -19,7 +20,11 @@ public class StoreService {
         return storeMapper.findAll(req);
     }
 
-    public StoreOneGetRes storeOneGet(long req){
-        return storeMapper.findOne(req);
+    public StoreOneGetRes storeOneGet(long id){
+        return storeMapper.findOne(id);
+    }
+
+    public List<MenuGetRes> menuListGet(long id){
+        return storeMapper.menuAll(id);
     }
 }

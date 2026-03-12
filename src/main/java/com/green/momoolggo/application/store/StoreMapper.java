@@ -1,5 +1,6 @@
 package com.green.momoolggo.application.store;
 
+import com.green.momoolggo.application.store.model.MenuGetRes;
 import com.green.momoolggo.application.store.model.StoreGetReq;
 import com.green.momoolggo.application.store.model.StoreGetRes;
 import com.green.momoolggo.application.store.model.StoreOneGetRes;
@@ -10,5 +11,6 @@ import java.util.List;
 
 public interface StoreMapper {
     List<StoreGetRes> findAll(StoreGetReq req);
-    StoreOneGetRes findOne(long req);
+    StoreOneGetRes findOne(long id);
+    List<MenuGetRes> menuAll(long id);
 }

@@ -1,5 +1,6 @@
 package com.green.momoolggo.application.store;
 
+import com.green.momoolggo.application.store.model.MenuGetRes;
 import com.green.momoolggo.application.store.model.StoreGetReq;
 import com.green.momoolggo.application.store.model.StoreGetRes;
 import com.green.momoolggo.application.store.model.StoreOneGetRes;
@@ -26,15 +27,15 @@ public class StoreController {
     }
 
     @GetMapping("/{id}")
-    public ResultResponse<?> StoreOneGet(@PathVariable long req){
-        StoreOneGetRes result = storeService.storeOneGet(req);
+    public ResultResponse<?> StoreOneGet(@PathVariable long id){
+        StoreOneGetRes result = storeService.storeOneGet(id);
         return new ResultResponse<>("",result);
     }
 
     @GetMapping("/menu/{id}")
-    public ResultResponse<?> MenuListGet(@ModelAttribute StoreGetReq req){
-
-        return null;
+    public ResultResponse<?> MenuListGet(@PathVariable long id){
+        List<MenuGetRes> result= storeService.menuListGet(id);
+        return new ResultResponse<>("", result);
     }
 
 }
