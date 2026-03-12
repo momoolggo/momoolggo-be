@@ -6,7 +6,7 @@
     <!--가게등록-->
     <insert id="registerStore">
         INSERT INTO store(
-            user_id,
+            owner_id,
             store_name,
             business_number,
             business_name,

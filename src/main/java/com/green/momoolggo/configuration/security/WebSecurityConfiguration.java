@@ -29,10 +29,6 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 이 줄을 추가하세요!
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(hb -> hb.disable())
-                .formLogin(fl -> fl.disable())
-                .csrf(csrf -> csrf.disable())
                 // JWT 사용 → 서버에서 세션을 만들지 않음
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Spring Security 기본 로그인 화면 비활성화
