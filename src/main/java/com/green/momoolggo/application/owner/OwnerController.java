@@ -72,10 +72,22 @@ public class OwnerController {
 
     //---------------------------------------------------------------------------------------------------
 
-    // 가게 메뉴 등록 : 0311 가게메뉴 등록 시작하고 OwnerMenuRes 파일만들어야함
-
-
+    // 가게 메뉴 등록
+    @PostMapping("/menu")
+    public ResultResponse<OwnerMenuRes> registerMenu(@RequestBody OwnerMenuRegReq dto){
+        OwnerMenuRes result = ownerService.registerMenu(dto);
+        return new ResultResponse<>("메뉴가 등록 되었습니다", result);
+    }
     // 가게 메뉴 수정
-
+    @PutMapping("/menu")
+    public ResultResponse<OwnerMenuRes> updateMenu(@RequestBody OwnerMenuUpdateReq dto){
+        OwnerMenuRes updateMenu = ownerService.updateMenu(dto);
+        return new ResultResponse<>("메뉴가 수정되었습니다.", updateMenu);
+    }
     // 가게 메뉴 삭제
+    @DeleteMapping("/menu/{menu_id}")
+    public ResultResponse<Long> deleteMenu(@PathVariable("menu_id") Long menuId){
+        Long deleteId = ownerService.deleteMenu(menuId);
+        return new ResultResponse<>("메뉴가 삭제되었습니다.", deleteId);
+    }
 }

@@ -10,6 +10,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 // Spring Security 전체 설정을 담당하는 클래스
 // 어떤 요청을 허용/차단할지, 어떤 필터를 거칠지 정의함
@@ -23,6 +28,7 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 이 줄을 추가하세요!
                 // JWT 사용 → 서버에서 세션을 만들지 않음
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Spring Security 기본 로그인 화면 비활성화
@@ -56,7 +62,7 @@ public class WebSecurityConfiguration {
 
                         // ── OWNER 전용 (사장만 가능)
                         // /api/owner/** 로 시작하는 모든 요청은 OWNER 역할만 접근 가능
-                        .requestMatchers("/api/owner/**").hasRole("OWNER")
+                        .requestMatchers("/api/owner/**").permitAll()
 
                         // ── 나머지 요청은 로그인 필수
                         // (유저 조회/수정, 찜, 장바구니, 주문, 리뷰 작성 등)
@@ -66,6 +72,23 @@ public class WebSecurityConfiguration {
                 // 요청이 들어오면 TokenAuthenticationFilter → 나머지 필터 순서로 실행
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // 프론트엔드 주소 허용
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        // 허용할 HTTP 메서드 (POST를 포함해야 합니다)
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // 모든 헤더 허용
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // 자격 증명(쿠키, 인증 헤더) 허용
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     // 비밀번호 암호화에 사용할 인코더 빈 등록

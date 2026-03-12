@@ -1,8 +1,6 @@
 package com.green.momoolggo.application.user;
 
-import com.green.momoolggo.application.user.model.UserSigninReq;
-import com.green.momoolggo.application.user.model.UserSigninRes;
-import com.green.momoolggo.application.user.model.UserSignupReq;
+import com.green.momoolggo.application.user.model.*;
 import com.green.momoolggo.configuration.model.ResultResponse;
 import com.green.momoolggo.configuration.model.UserPrincipal;
 import jakarta.servlet.http.HttpServletResponse;
@@ -59,5 +57,20 @@ public class UserController {
         }
         UserSigninRes data = new UserSigninRes(principal.getSignedUserNo(), principal.getName(), principal.getRole());
         return new ResultResponse<>("조회 성공", data);
+    }
+
+    // 내 정보 조회
+    @GetMapping
+    public ResultResponse<UserGetRes> getUser(@AuthenticationPrincipal UserPrincipal principal) {
+        UserGetRes data = userService.getUser(principal.getSignedUserNo());
+        return new ResultResponse<>("조회 성공", data);
+    }
+
+    // 내 정보 수정
+    @PutMapping
+    public ResultResponse<Void> updateUser(@AuthenticationPrincipal UserPrincipal principal,
+                                           @RequestBody UserUpdateReq req) {
+        userService.updateUser(principal.getSignedUserNo(), req);
+        return new ResultResponse<>("수정 성공", null);
     }
 }

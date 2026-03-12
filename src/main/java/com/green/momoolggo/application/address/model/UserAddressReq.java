@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserAddressReq {
-    private Long UserNo;
+    private Long userNo;
     private String address;        // 기본주소
     private String addressDetail;  // 상세주소
     private Double lat;            // 위도

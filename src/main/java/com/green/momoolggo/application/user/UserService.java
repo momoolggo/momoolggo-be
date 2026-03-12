@@ -2,10 +2,7 @@ package com.green.momoolggo.application.user;
 
 import com.green.momoolggo.application.address.UserAddressMapper;
 import com.green.momoolggo.application.address.model.UserAddressReq;
-import com.green.momoolggo.application.user.model.User;
-import com.green.momoolggo.application.user.model.UserSigninReq;
-import com.green.momoolggo.application.user.model.UserSigninRes;
-import com.green.momoolggo.application.user.model.UserSignupReq;
+import com.green.momoolggo.application.user.model.*;
 import com.green.momoolggo.configuration.model.JwtUser;
 import com.green.momoolggo.configuration.security.JwtTokenManager;
 import jakarta.servlet.http.HttpServletResponse;
@@ -69,5 +66,20 @@ public class UserService {
     // ── 로그아웃
     public void signout(HttpServletResponse res) {
         jwtTokenManager.signOut(res);
+    }
+
+    // 내 정보 조회
+    public UserGetRes getUser(Long userNo) {
+        User user = userMapper.findByUserNo(userNo);
+        return new UserGetRes(user.getUserId(), user.getName(), user.getTel(), user.getGender(), user.getBirth());
+    }
+
+    // 내 정보 수정
+    public void updateUser(Long userNo, UserUpdateReq req) {
+        if (req.getUserPw() != null && !req.getUserPw().isBlank()) {
+            req.setUserPw(passwordEncoder.encode(req.getUserPw()));
+        }
+        req.setUserNo(userNo);
+        userMapper.update(req);
     }
 }

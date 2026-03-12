@@ -47,4 +47,13 @@
         WHERE address_id = #{addressId}
     </delete>
 
+    <update id="setDefault">
+        UPDATE address
+        SET default_ad = CASE
+                             WHEN address_id = #{addressId} THEN 1
+                             ELSE 0
+            END
+        WHERE user_no = #{userNo}
+    </update>
+
 </mapper>

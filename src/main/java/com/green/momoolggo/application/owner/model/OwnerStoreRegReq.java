@@ -8,15 +8,13 @@ import org.springframework.security.core.parameters.P;
 @Getter
 @Setter
 public class OwnerStoreRegReq {
-
-    private long userId;
-
-    private String storeName;
-    private String location;
-    private String storeTel;
-    private String businessName;
-    private String businessNumber;
-    private String storePic;
-    private String storeInfo; //가게 소개글
-
+    private long userId;        // XML: #{userId}
+    private String storeName;   // XML: #{storeName}
+    private String businessNumber; // XML: #{businessNumber}
+    private String businessName;   // XML: #{businessName}
+    private String location;    // XML: #{location}
+    private String storePic;    // XML: #{storePic}
+    private String storeTel;    // XML: #{storeTel}
+    private String storeInfo;   // XML: #{storeInfo}
+    // 반드시 @Getter 어노테이션이 있거나, getter 메서드가 존재해야 합니다!
 }
