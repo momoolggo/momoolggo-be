@@ -47,4 +47,12 @@ public class UserAddressController {
         userAddressService.delete(addressId);
         return new ResultResponse<>("주소 삭제 성공", null);
     }
+
+    //기본배송지로 수정
+    @PutMapping("/{addressId}/default")
+    public ResultResponse<Void> setDefault(@AuthenticationPrincipal UserPrincipal principal,
+                                           @PathVariable Long addressId) {
+        userAddressService.setDefault(principal.getSignedUserNo(), addressId);
+        return new ResultResponse<>("기본 배송지 변경 성공", null);
+    }
 }

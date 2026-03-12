@@ -3,6 +3,7 @@ package com.green.momoolggo.application.address;
 import com.green.momoolggo.application.address.model.UserAddressReq;
 import com.green.momoolggo.application.address.model.UserAddressRes;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -23,4 +24,7 @@ public interface UserAddressMapper {
 
     // 주소 삭제
     int delete(long addressId);
+
+    //기본배송지로 수정
+    void setDefault(@Param("userNo") long userNo, @Param("addressId") long addressId);
 }
