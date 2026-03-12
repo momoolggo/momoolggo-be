@@ -5,10 +5,25 @@
 <mapper namespace="com.green.momoolggo.application.owner.OwnerMapper">
     <!--가게등록-->
     <insert id="registerStore">
-        INSERT INTO store( user_id, store_name, business_number,
-                          location, store_pic, store_tel, store_info)
-                    VALUES ( #{userId}, #{storeName}, #{businessNumber}, #{location},
-                            #{storePic}, #{tel}, #{storeInfo} )
+        INSERT INTO store(
+            user_id,
+            store_name,
+            business_number,
+            business_name,
+            location,
+            store_pic,
+            store_tel,
+            store_info
+        ) VALUES (
+          #{userId},
+                     #{storeName},
+                     #{businessNumber},
+                     #{businessName},
+                     #{location},
+                     #{storePic},
+                     #{storeTel},
+                     #{storeInfo}
+                 )
     </insert>
 
     <!-- 가게 기본 정보 수정 -->
