@@ -28,5 +28,9 @@
     LIMIT #{startIdx}, #{size}
     </select>
 
+    <select id="findOne">
+
+    </select>
+
 
 </mapper>

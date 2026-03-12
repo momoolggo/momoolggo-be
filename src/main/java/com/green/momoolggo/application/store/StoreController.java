@@ -2,14 +2,12 @@ package com.green.momoolggo.application.store;
 
 import com.green.momoolggo.application.store.model.StoreGetReq;
 import com.green.momoolggo.application.store.model.StoreGetRes;
+import com.green.momoolggo.application.store.model.StoreOneGetRes;
 import com.green.momoolggo.configuration.model.ResultResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,12 +26,14 @@ public class StoreController {
     }
 
     @GetMapping("/{id}")
-    public ResultResponse<?> StoreOneGet(@ModelAttribute StoreGetReq req){
-        return null;
+    public ResultResponse<?> StoreOneGet(@PathVariable long req){
+        StoreOneGetRes result = storeService.storeOneGet(req);
+        return new ResultResponse<>("",result);
     }
 
-    @GetMapping("/menu")
+    @GetMapping("/menu/{id}")
     public ResultResponse<?> MenuListGet(@ModelAttribute StoreGetReq req){
+
         return null;
     }
 
