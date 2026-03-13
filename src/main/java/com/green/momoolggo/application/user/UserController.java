@@ -1,11 +1,18 @@
 package com.green.momoolggo.application.user;
 
 import com.green.momoolggo.application.user.model.*;
+import com.green.momoolggo.configuration.constants.ConstJwt;
+import com.green.momoolggo.configuration.model.JwtUser;
 import com.green.momoolggo.configuration.model.ResultResponse;
 import com.green.momoolggo.configuration.model.UserPrincipal;
+import com.green.momoolggo.configuration.security.JwtTokenManager;
+import com.green.momoolggo.configuration.security.JwtTokenProvider;
+import com.green.momoolggo.configuration.util.MyCookieUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +23,11 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final MyCookieUtil myCookieUtil;
+    private final ConstJwt constJwt;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenManager jwtTokenManager;
+
 
     // ── 아이디 중복확인 GET /api/user/check-id?userId=xxx
     @GetMapping("/check-id")
@@ -55,7 +67,12 @@ public class UserController {
         if (principal == null) {
             return new ResultResponse<>("로그인이 필요합니다.", null);
         }
-        UserSigninRes data = new UserSigninRes(principal.getSignedUserNo(), principal.getName(), principal.getRole());
+        UserSigninRes data = new UserSigninRes(
+                principal.getSignedUserNo(),
+                principal.getName(),
+                principal.getRole(),
+                0L  // ← me는 만료시각 안 씀, 0으로 채우기
+        );
         return new ResultResponse<>("조회 성공", data);
     }
 
@@ -72,5 +89,22 @@ public class UserController {
                                            @RequestBody UserUpdateReq req) {
         userService.updateUser(principal.getSignedUserNo(), req);
         return new ResultResponse<>("수정 성공", null);
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(HttpServletRequest req, HttpServletResponse res) {
+        // RT 쿠키에서 꺼내기
+        String refreshToken = myCookieUtil.getValue(req, constJwt.getRefreshTokenCookieName());
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).body(new ResultResponse<>("RT 없음", null));
+        }
+
+        // RT 검증 & JwtUser 추출
+        JwtUser jwtUser = jwtTokenProvider.getJwtUserFromToken(refreshToken);
+
+        // 새 AT만 발급 (RT는 그대로)
+        jwtTokenManager.setAccessTokenInCookie(res, jwtUser);
+
+        return ResponseEntity.ok(new ResultResponse<>("AT 재발급 성공", null));
     }
 }
