@@ -11,4 +11,5 @@ public class UserSigninRes {
     private long   userNo;  // 로그인한 유저의 PK
     private String name;    // 이름
     private String role;    // 역할 (프론트에서 화면 분기에 사용)
+    private long   atExpiresAt;
 }

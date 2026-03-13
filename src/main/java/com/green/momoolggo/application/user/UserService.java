@@ -3,6 +3,7 @@ package com.green.momoolggo.application.user;
 import com.green.momoolggo.application.address.UserAddressMapper;
 import com.green.momoolggo.application.address.model.UserAddressReq;
 import com.green.momoolggo.application.user.model.*;
+import com.green.momoolggo.configuration.constants.ConstJwt;
 import com.green.momoolggo.configuration.model.JwtUser;
 import com.green.momoolggo.configuration.security.JwtTokenManager;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenManager jwtTokenManager;
     private final UserAddressMapper userAddressMapper;
+    private final ConstJwt constJwt;
 
     // ── 아이디 중복확인
     public boolean checkId(String userId) {
@@ -60,7 +62,8 @@ public class UserService {
         }
         JwtUser jwtUser = new JwtUser(user.getUserNo(), user.getRole(), null, user.getName());
         jwtTokenManager.issue(res, jwtUser);
-        return new UserSigninRes(user.getUserNo(), user.getName(), user.getRole());
+        return new UserSigninRes(user.getUserNo(), user.getName(), user.getRole(),
+                System.currentTimeMillis() + constJwt.getAccessTokenValidityMilliseconds());
     }
 
     // ── 로그아웃
