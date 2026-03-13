@@ -14,7 +14,7 @@
 <!--    </select>-->
 
     <select id="findAll"> <!--가게목록리스트-->
-    SELECT s.store_id id , s.store_name name, s.min_price min, s.rating_avg avg, s.rating_sum sum, s.order_sum count, s.store_pic pic
+    SELECT s.store_id id , s.store_name name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic pic
     FROM store s join store_category c on s.store_id=c.store_id
     <where>
         <if test="searchText != null and searchText != ''">
@@ -24,12 +24,32 @@
             AND c.category_id = #{categoryId}
         </if>
     </where>
-    ORDER BY s.order_sum DESC
+    ORDER BY s.order_count DESC
     LIMIT #{startIdx}, #{size}
     </select>
 
     <select id="findOne">
+        SELECT
+            s.store_name, u.name as ownerName, s.business_hours, s.min_price, s.store_pic,
+            s.holiday, s.state, s.location, s.detail_location, s.created_at, s.notice,
+            s.business_number, s.store_tel, s.rating_avg, s.rating_count, s.order_count
+        FROM store s JOIN user u ON s.owner_id = u.user_no
+        WHERE s.store_id = #{id}
+    </select>
 
+    <select id="menuAll">
+        SELECT
+            m.menu_id,
+            c.category AS categoryName,
+            m.name AS menuName,
+            m.price,
+            m.menu_pic,
+            m.menu_info,
+            m.soldout                     -- 품절 상태
+        FROM menu_category c
+                 JOIN menu m ON c.category_id = m.category_id
+        WHERE c.store_id = #{id}             -- 조회하려는 매장 아이디
+        ORDER BY c.category_order ASC, m.menu_order ASC
     </select>
 
 
