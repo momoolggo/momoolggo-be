@@ -71,6 +71,24 @@
         SELECT COUNT(*)
         FROM likedstore
         WHERE user_no = #{userNo}
+    <select id="searchStore">
+        SELECT
+            distinct s.store_id id, s.store_name name, s.store_pic pic
+        FROM store s
+                 JOIN store_category sc
+                      ON s.store_id = sc.store_id
+                 LEFT JOIN menu m
+                           ON m.category_id = sc.category_id
+                 LEFT JOIN category c
+                           ON c.category_id = sc.category_id
+        <where>
+            <if test="searchText != null and searchText != '' ">
+                 m.name LIKE concat('%', #{searchText},'%')
+                OR s.store_name LIKE concat('%', #{searchText},'%')
+                OR c.category_name LIKE concat('%', #{searchText},'%')
+            </if>
+        </where>
+        ORDER BY s.store_name DESC;
     </select>
 
 
