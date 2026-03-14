@@ -6,6 +6,7 @@ import com.green.momoolggo.application.store.model.StoreGetRes;
 import com.green.momoolggo.application.store.model.StoreOneGetRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,4 +28,12 @@ public class StoreService {
     public List<MenuGetRes> menuListGet(long id){
         return storeMapper.menuAll(id);
     }
+
+    public List<StoreGetRes> storeSearchList(@Param("searchText") String searchText) {
+        if( searchText == null || searchText.trim().isEmpty()) {
+            return List.of();
+
+        }
+        return storeMapper.searchStore(searchText);}
+
 }
