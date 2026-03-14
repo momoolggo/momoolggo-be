@@ -52,6 +52,25 @@
         ORDER BY c.category_order ASC, m.menu_order ASC
     </select>
 
+    <select id="favoriteList">
+        SELECT
+            s.store_id AS id,
+            s.store_name AS name,
+            s.min_price AS min,
+            s.rating_avg AS avg,
+            s.rating_count AS sum,
+            s.order_count AS count,
+            s.store_pic AS pic
+        FROM likedstore l
+            JOIN store s ON l.store_id = s.store_id
+        WHERE l.user_no = #{userNo}
+        ORDER BY l.created_at DESC LIMIT #{startIdx}, #{size}
+    </select>
+
+    <select id="favoriteCount">
+        SELECT COUNT(*)
+        FROM likedstore
+        WHERE user_no = #{userNo}
     <select id="searchStore">
         SELECT
             distinct s.store_id id, s.store_name name, s.store_pic pic

@@ -1,15 +1,14 @@
 package com.green.momoolggo.application.store;
 
-import com.green.momoolggo.application.store.model.MenuGetRes;
-import com.green.momoolggo.application.store.model.StoreGetReq;
-import com.green.momoolggo.application.store.model.StoreGetRes;
-import com.green.momoolggo.application.store.model.StoreOneGetRes;
+import com.green.momoolggo.application.store.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -25,8 +24,18 @@ public class StoreService {
         return storeMapper.findOne(id);
     }
 
-    public List<MenuGetRes> menuListGet(long id){
-        return storeMapper.menuAll(id);
+    public List<MenuGetRes> menuListGet(long id){ return storeMapper.menuAll(id); }
+
+    public Map<String, Object> getWishListResponse(StoreFavoriteReq req) {
+        Map<String, Object> response = new HashMap<>();
+        // 1. 찜 목록 리스트 가져오기 (LIMIT 적용됨)
+        List<StoreGetRes> list = storeMapper.favoriteList(req);
+        // 2. 전체 찜 개수 가져오기 (LIMIT 없음)
+        int totalCount = storeMapper.favoriteCount(req.getUserNo());
+
+        response.put("list", list);
+        response.put("totalCount", totalCount);
+        return response;
     }
 
     public List<StoreGetRes> storeSearchList(@Param("searchText") String searchText) {
