@@ -4,19 +4,28 @@
 
 <mapper namespace="com.green.momoolggo.application.store.StoreMapper">
 
-    <select id="findAll">
-        SELECT s.store_id id , s.store_name name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic pic
-        FROM store s join store_category c on s.store_id=c.store_id
-        <where>
-            <if test="searchText != null and searchText != ''">
-                AND s.store_name LIKE CONCAT('%', #{searchText}, '%')
-            </if>
-            <if test="categoryId != null and categoryId != 0">
-                AND c.category_id = #{categoryId}
-            </if>
-        </where>
-        ORDER BY s.order_count DESC
-        LIMIT #{startIdx}, #{size}
+
+<!--    <select id="findMaxPage">-->
+<!--        SELECT ceil(COUNT(1) / #{size}) FROM store-->
+<!--        <if test=" searchText != null and searchText != '' ">-->
+<!--            WHERE title LIKE '%${searchText}%'-->
+<!--            OR contents LIKE '%${searchText}%'-->
+<!--        </if>-->
+<!--    </select>-->
+
+    <select id="findAll"> <!--가게목록리스트-->
+    SELECT s.store_id id , s.store_name name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic pic
+    FROM store s join store_category c on s.store_id=c.store_id
+    <where>
+        <if test="searchText != null and searchText != ''">
+            AND s.store_name LIKE CONCAT('%', #{searchText}, '%')
+        </if>
+        <if test="categoryId != null and categoryId != 0">
+            AND c.category_id = #{categoryId}
+        </if>
+    </where>
+    ORDER BY s.order_count DESC
+    LIMIT #{startIdx}, #{size}
     </select>
 
     <select id="findOne">
@@ -36,10 +45,10 @@
             m.price,
             m.menu_pic,
             m.menu_info,
-            m.soldout
+            m.soldout                     -- 품절 상태
         FROM menu_category c
                  JOIN menu m ON c.category_id = m.category_id
-        WHERE c.store_id = #{id}
+        WHERE c.store_id = #{id}             -- 조회하려는 매장 아이디
         ORDER BY c.category_order ASC, m.menu_order ASC
     </select>
 
@@ -59,26 +68,20 @@
     </select>
 
     <select id="favoriteCount">
-        SELECT COUNT(*)
+        SELECT COUNT(1)
         FROM likedstore
         WHERE user_no = #{userNo}
     </select>
 
-    <select id="searchStore">
-        SELECT
-        distinct s.store_id id, s.store_name name, s.store_pic pic
-        FROM store s
-        JOIN store_category sc ON s.store_id = sc.store_id
-        LEFT JOIN menu m ON m.category_id = sc.category_id
-        LEFT JOIN category c ON c.category_id = sc.category_id
-        <where>
-            <if test="searchText != null and searchText != ''">
-                m.name LIKE concat('%', #{searchText}, '%')
-                OR s.store_name LIKE concat('%', #{searchText}, '%')
-                OR c.category_name LIKE concat('%', #{searchText}, '%')
-            </if>
-        </where>
-        ORDER BY s.store_name DESC
+    <select id="checkWish">
+        select count(1) from likedstore where user_no= #{userNo} and store_id=#{storeId}
     </select>
 
+    <delete id="deleteWish">
+    delete from likedstore where user_no= #{userNo} and store_id=#{storeId}
+    </delete>
+
+    <insert id="insertWish">
+ insert into likedstore set user_no=#{userNo}, store_id=#{storeId}
+    </insert>
 </mapper>

@@ -13,5 +13,8 @@ public interface StoreMapper {
     List<MenuGetRes> menuAll(long id);
     List<StoreGetRes> favoriteList( StoreFavoriteReq req);
     int favoriteCount(long id);
+    int checkWish(FavoriteToggleReq req);
+    int deleteWish(FavoriteToggleReq req);
+    int insertWish(FavoriteToggleReq req);
     List<StoreGetRes> searchStore(@org.apache.ibatis.annotations.Param("searchText") String searchText);
 }
