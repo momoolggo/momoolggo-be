@@ -34,6 +34,11 @@ public class StoreController {
         List<MenuGetRes> result= storeService.menuListGet(id);
         return new ResultResponse<>("", result);
     }
+    @GetMapping("/category")
+    public ResultResponse<?> StoreSearchList(@RequestParam ("search_text") String searchText){
+        List<StoreGetRes> result = storeService.storeSearchList(searchText);
+        return new ResultResponse<>("", result);
+    }
 
     @GetMapping("/favorite/check") //가게찜여부 확인
     public ResultResponse<?> wishCheck(@ModelAttribute FavoriteToggleReq req){

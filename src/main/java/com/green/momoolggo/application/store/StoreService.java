@@ -3,6 +3,7 @@ package com.green.momoolggo.application.store;
 import com.green.momoolggo.application.store.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,4 +51,12 @@ public class StoreService {
         response.put("totalCount", totalCount);
         return response;
     }
+
+    public List<StoreGetRes> storeSearchList(@Param("searchText") String searchText) {
+        if( searchText == null || searchText.trim().isEmpty()) {
+            return List.of();
+
+        }
+        return storeMapper.searchStore(searchText);}
+
 }
