@@ -3,7 +3,6 @@ package com.green.momoolggo.application.store;
 import com.green.momoolggo.application.store.model.*;
 import com.green.momoolggo.configuration.model.ResultResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +33,19 @@ public class StoreController {
     public ResultResponse<?> MenuListGet(@PathVariable long id){
         List<MenuGetRes> result= storeService.menuListGet(id);
         return new ResultResponse<>("", result);
+    }
+
+    @GetMapping("/favorite/check") //가게찜여부 확인
+    public ResultResponse<?> wishCheck(@ModelAttribute FavoriteToggleReq req){
+        boolean result = storeService.checkWish(req);
+        return new ResultResponse<>("",result);
+    }
+
+    @PostMapping("favorite")  //가게찜 토글
+    public ResultResponse<?> wishToggle(@RequestBody FavoriteToggleReq req){
+        System.out.println("qfqdqweq"+req.getUserNo());
+        boolean result = storeService.wishToggle(req);
+      return new ResultResponse<>("",result);
     }
 
     @GetMapping("/favorite") //찜한 가게 목록
