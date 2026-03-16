@@ -34,7 +34,7 @@ public class StoreController {
         List<MenuGetRes> result= storeService.menuListGet(id);
         return new ResultResponse<>("", result);
     }
-    @GetMapping("/category")
+    @GetMapping("/searchstore") // 메뉴 가게 검색
     public ResultResponse<?> StoreSearchList(@RequestParam ("search_text") String searchText){
         List<StoreGetRes> result = storeService.storeSearchList(searchText);
         return new ResultResponse<>("", result);
