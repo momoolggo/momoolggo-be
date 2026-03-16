@@ -98,5 +98,14 @@ public class OwnerService {
         return ownerMapper.getMyStore(ownerNo);
     }
 
+    //매출관리
+    public OwnerSalesStatsRes getSalesStats(long storeId, String period) {
+        return ownerMapper.getSalesStats(storeId, period);
+    }
+
+    public List<OwnerSalesRankingRes> getSalesRanking(long storeId, String period) {
+        return ownerMapper.getSalesRanking(storeId, period);
+    }
+
 
 }

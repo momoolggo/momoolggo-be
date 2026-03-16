@@ -49,4 +49,8 @@ public interface OwnerMapper {
 
     //로그인할 때 가게 불러오기
     OwnerStoreRes getMyStore(long ownerNo);
+
+    //매출관리
+    OwnerSalesStatsRes getSalesStats(@Param("storeId") long storeId, @Param("period") String period);
+    List<OwnerSalesRankingRes> getSalesRanking(@Param("storeId") long storeId, @Param("period") String period);
 }
