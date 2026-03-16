@@ -99,4 +99,21 @@ public class OwnerController {
         OwnerStoreRes store = ownerService.getMyStore(principal.getSignedUserNo());
         return new ResultResponse<>("가게 조회 성공", store);
     }
+
+    //매출관리
+    @GetMapping("/sales/stats")
+    public ResultResponse<OwnerSalesStatsRes> getSalesStats(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam String period) {
+        OwnerSalesStatsRes stats = ownerService.getSalesStats(principal.getSignedUserNo(), period);
+        return new ResultResponse<>("매출 통계 조회 성공", stats);
+    }
+
+    @GetMapping("/sales/ranking")
+    public ResultResponse<List<OwnerSalesRankingRes>> getSalesRanking(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam String period) {
+        List<OwnerSalesRankingRes> ranking = ownerService.getSalesRanking(principal.getSignedUserNo(), period);
+        return new ResultResponse<>("매출 순위 조회 성공", ranking);
+    }
 }
