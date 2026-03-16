@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.green.momoolggo.application.order.OrderMapper">
+
+    <!-- 유저 전화번호 조회 -->
+    <select id="findTelByUserNo" resultType="String">
+        SELECT tel
+        FROM user
+        WHERE user_no = #{userNo}
+    </select>
+
+    <!-- 기본 배송지 조회 -->
+    <select id="findDefaultAddress" resultType="com.green.momoolggo.application.order.model.OrderAddressInfo">
+        SELECT address        AS address,
+               address_detail AS addressDetail
+        FROM user_address
+        WHERE user_no    = #{userNo}
+          AND default_ad = 1
+            LIMIT 1
+    </select>
+
+    <!-- 주문 INSERT -->
+    <insert id="insertOrder">
+        INSERT INTO `order`
+        (user_no, store_id, request, address, address_detail,
+         delivery_fee, amount, pay_state)
+        VALUES
+            (#{userNo}, #{storeId}, #{request}, #{address}, #{addressDetail},
+             #{deliveryFee}, #{amount}, #{payState})
+    </insert>
+
+    <!-- 마지막 order_id 조회 -->
+    <select id="getLastOrderId" resultType="Long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
+    <!-- 주문 상세 INSERT -->
+    <insert id="insertOrderDetail">
+        INSERT INTO order_detail
+            (order_id, menu_id, quantity, menu_name, menu_price)
+        VALUES
+            (#{orderId}, #{menuId}, #{quantity}, #{menuName}, #{menuPrice})
+    </insert>
+
+</mapper>

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,19 @@ public class StoreService {
     }
 
     public List<MenuGetRes> menuListGet(long id){ return storeMapper.menuAll(id); }
+
+    @Transactional
+    public boolean wishToggle(FavoriteToggleReq req){
+        int check =storeMapper.checkWish(req);
+        System.out.println("dd"+req.getStoreId());
+        System.out.println(req.getUserNo());
+        if(check>0){storeMapper.deleteWish(req); return false;}
+        else{storeMapper.insertWish(req); return true;}
+    }
+
+    public boolean checkWish(FavoriteToggleReq req){
+        return storeMapper.checkWish(req)>0;
+    }
 
     public Map<String, Object> getWishListResponse(StoreFavoriteReq req) {
         Map<String, Object> response = new HashMap<>();

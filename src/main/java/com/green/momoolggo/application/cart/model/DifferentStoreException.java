@@ -1,4 +1,4 @@
-package com.green.momoolggo.application.cart;
+package com.green.momoolggo.application.cart.model;
 
 // 다른 매장 메뉴 담을 때 던지는 커스텀 예외
 public class DifferentStoreException extends RuntimeException {
