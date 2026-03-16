@@ -21,7 +21,13 @@ public class OwnerService {
     // 가게 등록
     public void registerStore(OwnerStoreRegReq dto){
         log.info("가게 등록 로직 시작: {}", dto.getStoreName());
+        log.info("상세주소: {}", dto.getAddressDetail());
         int result = ownerMapper.registerStore(dto);
+        if (result == 0) {
+            throw new RuntimeException("가게 등록 실패");
+        }
+        ownerMapper.registerStoreCategory(dto.getUserId(), dto.getCategoryId());
+        ownerMapper.registerDefaultMenuCategory(dto.getUserId());
     }
 
     // 가게 기본 정보 수정
@@ -85,6 +91,11 @@ public class OwnerService {
             throw new RuntimeException("메뉴 삭제 실패: 해당 메뉴를 찾을 수 없음");
         }
         return menuId;
+    }
+
+    //로그인할 때 가게 불러오기
+    public OwnerStoreRes getMyStore(long ownerNo) {
+        return ownerMapper.getMyStore(ownerNo);
     }
 
 

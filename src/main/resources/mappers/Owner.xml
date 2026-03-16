@@ -11,15 +11,21 @@
             business_number,
             business_name,
             location,
+            detail_location,
+            latitude,
+            longitude,
             store_pic,
             store_tel,
             store_info
         ) VALUES (
-          #{userId},
+                     #{userId},
                      #{storeName},
                      #{businessNumber},
                      #{businessName},
                      #{location},
+                     #{addressDetail},
+                     #{lat},
+                     #{lng},
                      #{storePic},
                      #{storeTel},
                      #{storeInfo}
@@ -127,6 +133,31 @@
         DELETE FROM menu
         WHERE menu_id = #{menuId}
     </delete>
+
+    <insert id="registerDefaultMenuCategory">
+        INSERT INTO menu_category (store_id, category, category_order)
+        SELECT store_id, '인기메뉴', 1
+        FROM store
+        WHERE owner_id = #{userId}
+        ORDER BY store_id DESC
+            LIMIT 1
+    </insert>
+
+    <insert id="registerStoreCategory">
+        INSERT INTO store_category (store_id, category_id)
+        SELECT store_id, #{categoryId}
+        FROM store
+        WHERE owner_id = #{userId}
+        ORDER BY store_id DESC
+            LIMIT 1
+    </insert>
+
+    <select id="getMyStore" resultType="com.green.momoolggo.application.owner.model.OwnerStoreRes">
+        SELECT store_id, store_name
+        FROM store
+        WHERE owner_id = #{ownerNo}
+            LIMIT 1
+    </select>
 
 
 

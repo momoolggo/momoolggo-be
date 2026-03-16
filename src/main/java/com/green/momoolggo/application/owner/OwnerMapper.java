@@ -40,4 +40,13 @@ public interface OwnerMapper {
 
     // 메뉴 삭제
     int deleteMenu(Long menuId);
+
+    // 메뉴 카테고리 자동 생성
+    void registerDefaultMenuCategory(long userId);
+
+    // 가게 카테고리 설정
+    void registerStoreCategory(@Param("userId") long userId, @Param("categoryId") long categoryId);
+
+    //로그인할 때 가게 불러오기
+    OwnerStoreRes getMyStore(long ownerNo);
 }

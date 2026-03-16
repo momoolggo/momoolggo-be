@@ -63,7 +63,7 @@ public class UserService {
         JwtUser jwtUser = new JwtUser(user.getUserNo(), user.getRole(), null, user.getName());
         jwtTokenManager.issue(res, jwtUser);
         return new UserSigninRes(user.getUserNo(), user.getName(), user.getRole(),
-                System.currentTimeMillis() + constJwt.getAccessTokenValidityMilliseconds());
+                System.currentTimeMillis() + constJwt.getAccessTokenValidityMilliseconds(), null);
     }
 
     // ── 로그아웃

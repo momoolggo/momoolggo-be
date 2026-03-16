@@ -3,7 +3,6 @@ package com.green.momoolggo.application.owner.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.parameters.P;
 
 @Getter
 @Setter
@@ -16,5 +15,9 @@ public class OwnerStoreRegReq {
     private String storePic;    // XML: #{storePic}
     private String storeTel;    // XML: #{storeTel}
     private String storeInfo;   // XML: #{storeInfo}
+    private Double lat;
+    private Double lng;
+    private long categoryId;
+    private String addressDetail;
     // 반드시 @Getter 어노테이션이 있거나, getter 메서드가 존재해야 합니다!
 }
