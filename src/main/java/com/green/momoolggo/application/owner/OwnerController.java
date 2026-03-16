@@ -3,8 +3,10 @@ package com.green.momoolggo.application.owner;
 
 import com.green.momoolggo.application.owner.model.*;
 import com.green.momoolggo.configuration.model.ResultResponse;
+import com.green.momoolggo.configuration.model.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -89,5 +91,12 @@ public class OwnerController {
     public ResultResponse<Long> deleteMenu(@PathVariable("menu_id") Long menuId){
         Long deleteId = ownerService.deleteMenu(menuId);
         return new ResultResponse<>("메뉴가 삭제되었습니다.", deleteId);
+    }
+
+    //로그인할 때 가게 불러오기
+    @GetMapping("/store")
+    public ResultResponse<OwnerStoreRes> getMyStore(@AuthenticationPrincipal UserPrincipal principal) {
+        OwnerStoreRes store = ownerService.getMyStore(principal.getSignedUserNo());
+        return new ResultResponse<>("가게 조회 성공", store);
     }
 }

@@ -71,7 +71,8 @@ public class UserController {
                 principal.getSignedUserNo(),
                 principal.getName(),
                 principal.getRole(),
-                0L  // ← me는 만료시각 안 씀, 0으로 채우기
+                0L,  // ← me는 만료시각 안 씀, 0으로 채우기
+                null
         );
         return new ResultResponse<>("조회 성공", data);
     }
