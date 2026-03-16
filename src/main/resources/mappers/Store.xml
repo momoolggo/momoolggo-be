@@ -52,6 +52,31 @@
         ORDER BY c.category_order ASC, m.menu_order ASC
     </select>
 
+    <select id="searchStore">
+        SELECT distinct s.store_id AS id, s.store_name AS name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic AS pic
+        FROM store s
+                 JOIN store_category sc ON s.store_id = sc.store_id
+                 LEFT JOIN menu_category mc ON mc.store_id = s.store_id
+                 LEFT JOIN menu m ON m.category_id = mc.category_id
+                 LEFT JOIN category c ON c.category_id = sc.category_id
+        <where>
+            <if test="searchText !=null and searchText !=''">
+                ( m.name LIKE concat('%', #{searchText}, '%')
+                OR s.store_name LIKE concat('%', #{searchText}, '%')
+                OR c.category_name LIKE concat('%', #{searchText}, '%')
+                 )
+            </if>
+        </where>
+        ORDER BY
+            CASE
+            WHEN s.store_name = #{searchText} THEN 1
+            WHEN s.store_name  LIKE concat(#{searchText}, '%') THEN 2
+            WHEN s.store_name LIKE concat('%', #{searchText}, '%') THEN 3
+            ELSE 4
+            END,
+            s.order_count DESC
+    </select>
+
     <select id="favoriteList">
         SELECT
             s.store_id AS id,
@@ -65,6 +90,7 @@
             JOIN store s ON l.store_id = s.store_id
         WHERE l.user_no = #{userNo}
         ORDER BY l.created_at DESC LIMIT #{startIdx}, #{size}
+        LIMIT #{startIdx}, #{size}
     </select>
 
     <select id="favoriteCount">

@@ -52,7 +52,7 @@ public class StoreService {
         return response;
     }
 
-    public List<StoreGetRes> storeSearchList(@Param("searchText") String searchText) {
+    public List<StoreGetRes> storeSearchList(String searchText) {
         if( searchText == null || searchText.trim().isEmpty()) {
             return List.of();
 
