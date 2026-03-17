@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -115,5 +116,36 @@ public class OwnerController {
             @RequestParam String period) {
         List<OwnerSalesRankingRes> ranking = ownerService.getSalesRanking(principal.getSignedUserNo(), period);
         return new ResultResponse<>("매출 순위 조회 성공", ranking);
+    }
+
+    // 가게 메뉴 목록 조회
+    @GetMapping("/menu")
+    public ResultResponse<List<OwnerMenuRes>> getMenus(@RequestParam Long storeId) {
+        List<OwnerMenuRes> list = ownerService.getMenusByStoreId(storeId);
+        return new ResultResponse<>("메뉴 조회 성공", list);
+    }
+
+    //메뉴 카테고리 관련
+    @GetMapping("/category")
+    public ResultResponse<List<Map<String, Object>>> getCategories(@RequestParam Long storeId) {
+        return new ResultResponse<>("카테고리 조회 성공", ownerService.getCategoriesByStoreId(storeId));
+    }
+
+    @PostMapping("/category")
+    public ResultResponse<Void> addCategory(@RequestBody Map<String, Object> body) {
+        ownerService.addCategory(Long.valueOf(body.get("storeId").toString()), body.get("category").toString());
+        return new ResultResponse<>("카테고리 추가 성공", null);
+    }
+
+    @PutMapping("/category")
+    public ResultResponse<Void> updateCategory(@RequestBody Map<String, Object> body) {
+        ownerService.updateCategory(Long.valueOf(body.get("categoryId").toString()), body.get("category").toString());
+        return new ResultResponse<>("카테고리 수정 성공", null);
+    }
+
+    @DeleteMapping("/category/{categoryId}")
+    public ResultResponse<Void> deleteCategory(@PathVariable Long categoryId) {
+        ownerService.deleteCategory(categoryId);
+        return new ResultResponse<>("카테고리 삭제 성공", null);
     }
 }
