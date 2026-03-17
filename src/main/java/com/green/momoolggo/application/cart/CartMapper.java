@@ -20,6 +20,8 @@ public interface CartMapper {
     CartListRes findCartWithItems(@Param("userNo") Long userNo);
     void insertCart(@Param("userNo") Long userNo, @Param("storeId") Long storeId);
     Long getLastCartId();
+    Long findCartItemId(@Param("cartId") Long cartId, @Param("menuId") Long menuId);
+    void addCartItemQuantity(@Param("cartItemId") Long cartItemId, @Param("quantity") int quantity);
     void insertCartItem(@Param("cartId") Long cartId, @Param("menuId") Long menuId, @Param("quantity") int quantity);
     void updateCartItem(@Param("cartItemId") Long cartItemId, @Param("quantity") int quantity);
     void deleteCartItem(@Param("cartItemId") Long cartItemId);

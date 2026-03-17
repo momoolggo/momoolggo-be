@@ -71,6 +71,22 @@
         VALUES (#{cartId}, #{menuId}, #{quantity})
     </insert>
 
+    <!-- 같은 메뉴 있는지 확인 -->
+    <select id="findCartItemId" resultType="Long">
+        SELECT cart_item_id
+        FROM cart_detail
+        WHERE cart_id = #{cartId}
+          AND menu_id = #{menuId}
+            LIMIT 1
+    </select>
+
+    <!-- 수량 합산 -->
+    <update id="addCartItemQuantity">
+        UPDATE cart_detail
+        SET quantity = quantity + #{quantity}
+        WHERE cart_item_id = #{cartItemId}
+    </update>
+
     <!-- 장바구니 아이템 전체 삭제 -->
     <delete id="deleteAllCartItems">
         DELETE FROM cart_detail

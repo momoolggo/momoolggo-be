@@ -43,11 +43,23 @@ public class CartService {
         Cart existCart = cartMapper.findCartEntityByUserNo(dto.getUserNo());
 
         if (existCart == null) {
+            // 장바구니 없음 → 새로 생성
             cartMapper.insertCart(dto.getUserNo(), storeId);
             Long newCartId = cartMapper.getLastCartId();
             cartMapper.insertCartItem(newCartId, dto.getMenuId(), dto.getQuantity());
+
         } else if (existCart.getStoreId().equals(storeId)) {
-            cartMapper.insertCartItem(existCart.getCartId(), dto.getMenuId(), dto.getQuantity());
+            // 같은 매장 → 같은 메뉴 있는지 확인
+            Long existItemId = cartMapper.findCartItemId(existCart.getCartId(), dto.getMenuId()); // ✅ 추가
+
+            if (existItemId != null) {
+                // 같은 메뉴 있음 → 수량 합산
+                cartMapper.addCartItemQuantity(existItemId, dto.getQuantity()); // ✅ 추가
+            } else {
+                // 같은 메뉴 없음 → 새 행 추가
+                cartMapper.insertCartItem(existCart.getCartId(), dto.getMenuId(), dto.getQuantity());
+            }
+
         } else {
             throw new DifferentStoreException("다른 매장의 메뉴가 장바구니에 있습니다.");
         }
