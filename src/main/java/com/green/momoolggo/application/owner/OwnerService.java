@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.swing.plaf.PanelUI;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -105,6 +106,27 @@ public class OwnerService {
 
     public List<OwnerSalesRankingRes> getSalesRanking(long storeId, String period) {
         return ownerMapper.getSalesRanking(storeId, period);
+    }
+
+    public List<OwnerMenuRes> getMenusByStoreId(Long storeId) {
+        return ownerMapper.getMenusByStoreId(storeId);
+    }
+
+    //메뉴 카테고리 관련
+    public List<Map<String, Object>> getCategoriesByStoreId(Long storeId) {
+        return ownerMapper.getCategoriesByStoreId(storeId);
+    }
+
+    public void addCategory(Long storeId, String category) {
+        ownerMapper.addCategory(storeId, category);
+    }
+
+    public void updateCategory(Long categoryId, String category) {
+        ownerMapper.updateCategory(categoryId, category);
+    }
+
+    public void deleteCategory(Long categoryId) {
+        ownerMapper.deleteCategory(categoryId);
     }
 
 

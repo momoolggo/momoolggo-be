@@ -61,6 +61,8 @@ public class WebSecurityConfiguration {
                         // 내 정보 조회 (Vue 역할 분기용)
                         .requestMatchers(HttpMethod.GET, "/api/user/me").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/owner/menu").permitAll()
+
                         // ── OWNER 전용 (사장만 가능)
                         // /api/owner/** 로 시작하는 모든 요청은 OWNER 역할만 접근 가능
                         .requestMatchers("/api/owner/**").permitAll()

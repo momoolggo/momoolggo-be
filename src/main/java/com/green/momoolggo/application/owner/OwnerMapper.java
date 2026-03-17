@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OwnerMapper {
@@ -53,4 +54,13 @@ public interface OwnerMapper {
     //매출관리
     OwnerSalesStatsRes getSalesStats(@Param("storeId") long storeId, @Param("period") String period);
     List<OwnerSalesRankingRes> getSalesRanking(@Param("storeId") long storeId, @Param("period") String period);
+
+    //메뉴 불러오기
+    List<OwnerMenuRes> getMenusByStoreId(Long storeId);
+
+    //카테고리 관련
+    List<Map<String, Object>> getCategoriesByStoreId(Long storeId);
+    void addCategory(@Param("storeId") Long storeId, @Param("category") String category);
+    void updateCategory(@Param("categoryId") Long categoryId, @Param("category") String category);
+    void deleteCategory(Long categoryId);
 }
