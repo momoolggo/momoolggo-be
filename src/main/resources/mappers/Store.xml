@@ -89,7 +89,7 @@
         FROM likedstore l
             JOIN store s ON l.store_id = s.store_id
         WHERE l.user_no = #{userNo}
-        ORDER BY l.created_at DESC LIMIT #{startIdx}, #{size}
+        ORDER BY l.created_at DESC
         LIMIT #{startIdx}, #{size}
     </select>
 
