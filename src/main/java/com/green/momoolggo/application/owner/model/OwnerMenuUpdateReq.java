@@ -8,6 +8,7 @@ import lombok.Setter;
 public class OwnerMenuUpdateReq { //메뉴 수정
     private long menuId;
     private String name;
+    private long categoryId;
     private String menuInfo;
     private int price;
     private String menuPic;

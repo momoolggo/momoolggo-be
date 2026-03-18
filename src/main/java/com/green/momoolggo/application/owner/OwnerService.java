@@ -5,12 +5,16 @@ import com.green.momoolggo.application.owner.model.*;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.plaf.PanelUI;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -129,5 +133,27 @@ public class OwnerService {
         ownerMapper.deleteCategory(categoryId);
     }
 
+    public String uploadMenuImage(MultipartFile file, String uploadPath) {
+        try {
+            // 저장 폴더 생성
+            File dir = new File(uploadPath);
+            if (!dir.exists()) dir.mkdirs();
+
+            // 파일명 중복 방지
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            File savedFile = new File(uploadPath + fileName);
+
+            // 압축해서 저장 (30MB → 약 1MB 이하)
+            Thumbnails.of(file.getInputStream())
+                    .size(800, 600)
+                    .outputQuality(0.8)
+                    .toFile(savedFile);
+
+            return "/uploads/menu/" + fileName;  // DB에 저장될 경로
+
+        } catch (Exception e) {
+            throw new RuntimeException("이미지 업로드 실패");
+        }
+    }
 
 }

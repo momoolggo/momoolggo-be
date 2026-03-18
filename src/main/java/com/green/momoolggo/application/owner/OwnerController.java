@@ -8,6 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
+import net.coobird.thumbnailator.Thumbnails;
+import java.io.File;
+import java.util.UUID;
 
 import java.util.List;
 import java.util.Map;
@@ -147,5 +152,15 @@ public class OwnerController {
     public ResultResponse<Void> deleteCategory(@PathVariable Long categoryId) {
         ownerService.deleteCategory(categoryId);
         return new ResultResponse<>("카테고리 삭제 성공", null);
+    }
+
+    @Value("${file.upload.path}")
+    private String uploadPath;
+
+    // 이미지 업로드 API
+    @PostMapping("/menu/image")
+    public ResultResponse<String> uploadMenuImage(@RequestParam("file") MultipartFile file) {
+        String imageUrl = ownerService.uploadMenuImage(file, uploadPath);
+        return new ResultResponse<>("이미지 업로드 성공", imageUrl);
     }
 }

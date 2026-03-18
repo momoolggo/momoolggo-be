@@ -22,6 +22,10 @@ spring:
     url: ${DATASOURCE.DB_URL}
     username: ${DATASOURCE.USERNAME}
     password: ${DATASOURCE.PASSWORD}
+  servlet: # ← 사진 이미지 최대 크기 설정
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
 
 
 mybatis:
@@ -35,3 +39,7 @@ naver:
   map-client-id: l1ytziijx9
   search-client-id: Irz0Q0SbBNwf1to6Rjiy
   search-client-secret: LTSWa3axtJ
+
+file:
+  upload:
+    path: C:/uploads/menu/
