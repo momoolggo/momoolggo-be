@@ -15,7 +15,7 @@
     <select id="findDefaultAddress" resultType="com.green.momoolggo.application.order.model.OrderAddressInfo">
         SELECT address        AS address,
                address_detail AS addressDetail
-        FROM user_address
+        FROM address
         WHERE user_no    = #{userNo}
           AND default_ad = 1
             LIMIT 1
@@ -23,25 +23,27 @@
 
     <!-- 주문 INSERT -->
     <insert id="insertOrder">
-        INSERT INTO `order`
-        (user_no, store_id, request, address, address_detail,
+        INSERT INTO orders
+        (order_id, user_no, store_id, request, address, address_detail,
          delivery_fee, amount, pay_state)
         VALUES
-            (#{userNo}, #{storeId}, #{request}, #{address}, #{addressDetail},
+            (#{uniqueId}, #{userNo}, #{storeId}, #{request}, #{address}, #{addressDetail},
              #{deliveryFee}, #{amount}, #{payState})
     </insert>
-
-    <!-- 마지막 order_id 조회 -->
-    <select id="getLastOrderId" resultType="Long">
-        SELECT LAST_INSERT_ID()
-    </select>
 
     <!-- 주문 상세 INSERT -->
     <insert id="insertOrderDetail">
         INSERT INTO order_detail
             (order_id, menu_id, quantity, menu_name, menu_price)
         VALUES
-            (#{orderId}, #{menuId}, #{quantity}, #{menuName}, #{menuPrice})
+            (#{uniqueId}, #{menuId}, #{quantity}, #{menuName}, #{menuPrice})
     </insert>
+
+
+    <select id="findUserNoByOrderId" resultType="long">
+        SELECT user_no
+        FROM orders
+        WHERE order_id = #{orderId}
+    </select>
 
 </mapper>

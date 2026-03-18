@@ -54,7 +54,7 @@ public class OrderService {
 
     // 주문 확정
     @Transactional
-    public void placeOrder(Long userNo, OrderReqDto dto) {
+    public long placeOrder(Long userNo, OrderReqDto dto) {
         // 1. 장바구니 조회
         Cart cart = cartMapper.findCartEntityByUserNo(userNo);
         if (cart == null) throw new RuntimeException("장바구니가 비어있습니다.");
@@ -72,7 +72,13 @@ public class OrderService {
         int totalAmount = menuTotal + DELIVERY_FEE;
 
         // 4. 주문 INSERT
+        String serverOrderId = "39";
+        String combined = serverOrderId + System.currentTimeMillis();
+
+// 다시 숫자로 변환
+        long uniqueId = Long.parseLong(combined);
         orderMapper.insertOrder(
+                uniqueId,
                 userNo,
                 cart.getStoreId(),
                 dto.getRequest(),
@@ -83,21 +89,17 @@ public class OrderService {
                 totalAmount,
                 dto.getPayState()
         );
-        Long orderId = orderMapper.getLastOrderId();
 
         // 5. 주문 상세 INSERT
         for (CartItemRes item : items) {
             orderMapper.insertOrderDetail(
-                    orderId,
-                    item.getId(),
+                    uniqueId,
+                    item.getMenuId(),
                     item.getQuantity(),
                     item.getMenuName(),
                     item.getPrice()
             );
         }
 
-        // 6. 장바구니 비우기
-        cartMapper.deleteAllCartItems(cart.getCartId());
-        cartMapper.deleteCart(cart.getCartId());
-    }
+    return uniqueId ;}
 }

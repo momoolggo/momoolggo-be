@@ -30,6 +30,9 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.13.0'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.13.0'
     implementation 'net.coobird:thumbnailator:0.4.20'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     // Source: https://mvnrepository.com/artifact/me.paulschwarz/spring-dotenv
     implementation 'me.paulschwarz:spring-dotenv:5.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
