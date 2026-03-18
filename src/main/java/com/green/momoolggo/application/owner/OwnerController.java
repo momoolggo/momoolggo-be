@@ -9,14 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import net.coobird.thumbnailator.Thumbnails;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-
-import net.coobird.thumbnailator.Thumbnails;
 
 @Slf4j
 @RestController
@@ -36,18 +35,6 @@ public class OwnerController {
         return new ResultResponse<>("가게 등록 성공", null);
     }
 
-    // 가게 등록 (이미지 포함) - multipart/form-data
-    @PostMapping("/store/with-image")
-    public ResultResponse<Void> postStoreWithImage(
-            @RequestPart("data") OwnerStoreRegReq dto,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            dto.setStorePic(convertToDataUri(file));
-        }
-        ownerService.registerStore(dto);
-        return new ResultResponse<>("가게 등록 성공", null);
-    }
-
     // 가게 기본정보 수정
     @PutMapping("/store")
     public ResultResponse<Void> updatedStore(@RequestBody OwnerStoreUpdateReq dto){
@@ -62,16 +49,6 @@ public class OwnerController {
         log.info("가게 운영관리 수정: {}", dto);
         OwnerStoreRes updatedStore = ownerService.updateStoreStatus(dto);
         return new ResultResponse<>("운영정보 업데이트 완료", null);
-    }
-
-    // 가게 이미지 수정 (별도 API)
-    @PutMapping("/store/{storeId}/image")
-    public ResultResponse<String> updateStoreImage(
-            @PathVariable Long storeId,
-            @RequestParam("file") MultipartFile file) throws IOException {
-        String dataUri = convertToDataUri(file);
-        ownerService.updateStoreImage(storeId, dataUri);
-        return new ResultResponse<>("가게 이미지 수정 성공", dataUri);
     }
 
     // 가게 삭제
@@ -96,12 +73,13 @@ public class OwnerController {
     public ResultResponse<List<OwnerOrderRes>> getOrders(
             @RequestParam Long store_id,
             @RequestParam(required = false) Integer state,
-            @RequestParam(required = false) String date) {  // ← 추가: "2026-03-19" 형식
+            @RequestParam(required = false) String date) {
         log.info("주문 조회 요청: store_id = {}, state = {}, date = {}", store_id, state, date);
         List<OwnerOrderRes> list = ownerService.getOrders(store_id, state, date);
         return new ResultResponse<>(String.format("%d건의 주문을 조회합니다.", list.size()), list);
     }
 
+    // 주문 상태 수정
     @PutMapping("/order/{order_id}")
     public ResultResponse<Void> putOrderState(@PathVariable Long order_id,
                                               @RequestBody OwnerOrderStateReq req){
@@ -111,71 +89,45 @@ public class OwnerController {
         return new ResultResponse<>("주문 상태 수정 성공", null);
     }
 
+    // 주문 삭제
+    @DeleteMapping("/order/{order_id}")
+    public ResultResponse<Void> deleteOrder(@PathVariable Long order_id){
+        log.info("주문 삭제 요청: order_id = {}", order_id);
+        ownerService.deleteOrder(order_id);
+        return new ResultResponse<>("주문 삭제 성공", null);
+    }
+
     // ========== 메뉴 관련 ==========
 
-    // 메뉴 등록 (JSON, 이미지 data URI가 menuPic에 포함)
+    // 가게 메뉴 등록
     @PostMapping("/menu")
     public ResultResponse<OwnerMenuRes> registerMenu(@RequestBody OwnerMenuRegReq dto){
         OwnerMenuRes result = ownerService.registerMenu(dto);
         return new ResultResponse<>("메뉴가 등록 되었습니다", result);
     }
 
-    // 메뉴 등록 (이미지 파일 포함) - multipart/form-data
-    @PostMapping("/menu/with-image")
-    public ResultResponse<OwnerMenuRes> registerMenuWithImage(
-            @RequestPart("data") OwnerMenuRegReq dto,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            dto.setMenuPic(convertToDataUri(file));
-        }
-        OwnerMenuRes result = ownerService.registerMenu(dto);
-        return new ResultResponse<>("메뉴가 등록 되었습니다", result);
-    }
-
-    // 메뉴 수정
+    // 가게 메뉴 수정
     @PutMapping("/menu")
     public ResultResponse<OwnerMenuRes> updateMenu(@RequestBody OwnerMenuUpdateReq dto){
         OwnerMenuRes updateMenu = ownerService.updateMenu(dto);
         return new ResultResponse<>("메뉴가 수정되었습니다.", updateMenu);
     }
 
-    // 메뉴 수정 (이미지 파일 포함)
-    @PutMapping("/menu/with-image")
-    public ResultResponse<OwnerMenuRes> updateMenuWithImage(
-            @RequestPart("data") OwnerMenuUpdateReq dto,
-            @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            dto.setMenuPic(convertToDataUri(file));
-        }
-        OwnerMenuRes updateMenu = ownerService.updateMenu(dto);
-        return new ResultResponse<>("메뉴가 수정되었습니다.", updateMenu);
-    }
-
-    // 메뉴 이미지만 수정 (별도 API)
-    @PutMapping("/menu/{menuId}/image")
-    public ResultResponse<String> updateMenuImage(
-            @PathVariable Long menuId,
-            @RequestParam("file") MultipartFile file) throws IOException {
-        String dataUri = convertToDataUri(file);
-        ownerService.updateMenuImage(menuId, dataUri);
-        return new ResultResponse<>("메뉴 이미지 수정 성공", dataUri);
-    }
-
-    // 메뉴 삭제
+    // 가게 메뉴 삭제
     @DeleteMapping("/menu/{menu_id}")
     public ResultResponse<Long> deleteMenu(@PathVariable("menu_id") Long menuId){
         Long deleteId = ownerService.deleteMenu(menuId);
         return new ResultResponse<>("메뉴가 삭제되었습니다.", deleteId);
     }
 
-    // 메뉴 목록 조회
+    // 가게 메뉴 목록 조회
     @GetMapping("/menu")
     public ResultResponse<List<OwnerMenuRes>> getMenus(@RequestParam Long storeId) {
         List<OwnerMenuRes> list = ownerService.getMenusByStoreId(storeId);
         return new ResultResponse<>("메뉴 조회 성공", list);
     }
 
-    // ★ 기존 이미지 업로드 API (Base64 data URI 반환으로 변경)
+    // 이미지 업로드 (Base64 data URI 반환)
     @PostMapping("/menu/image")
     public ResultResponse<String> uploadMenuImage(@RequestParam("file") MultipartFile file) throws IOException {
         String dataUri = convertToDataUri(file);
@@ -207,13 +159,15 @@ public class OwnerController {
         return new ResultResponse<>("카테고리 삭제 성공", null);
     }
 
-    // ========== 매출 관련 ==========
+    // ========== 매출 관련 (수정: owner_id → store_id 변환) ==========
 
     @GetMapping("/sales/stats")
     public ResultResponse<OwnerSalesStatsRes> getSalesStats(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam String period) {
-        OwnerSalesStatsRes stats = ownerService.getSalesStats(principal.getSignedUserNo(), period);
+        // owner_id로 먼저 가게를 조회하여 store_id를 가져옴
+        OwnerStoreRes store = ownerService.getMyStore(principal.getSignedUserNo());
+        OwnerSalesStatsRes stats = ownerService.getSalesStats(store.getStoreId(), period);
         return new ResultResponse<>("매출 통계 조회 성공", stats);
     }
 
@@ -221,7 +175,9 @@ public class OwnerController {
     public ResultResponse<List<OwnerSalesRankingRes>> getSalesRanking(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam String period) {
-        List<OwnerSalesRankingRes> ranking = ownerService.getSalesRanking(principal.getSignedUserNo(), period);
+        // owner_id로 먼저 가게를 조회하여 store_id를 가져옴
+        OwnerStoreRes store = ownerService.getMyStore(principal.getSignedUserNo());
+        List<OwnerSalesRankingRes> ranking = ownerService.getSalesRanking(store.getStoreId(), period);
         return new ResultResponse<>("매출 순위 조회 성공", ranking);
     }
 
@@ -230,7 +186,6 @@ public class OwnerController {
     /**
      * MultipartFile → Base64 data URI 변환
      * 이미지를 800x600으로 리사이즈 + 80% 품질 압축 후 Base64로 변환
-     * 결과: "data:image/jpeg;base64,/9j/4AAQ..."
      */
     private String convertToDataUri(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
@@ -246,7 +201,6 @@ public class OwnerController {
             throw new IllegalArgumentException("파일 크기는 10MB 이하만 가능합니다.");
         }
 
-        // Thumbnailator로 리사이즈 + 압축 (기존 로직 유지)
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Thumbnails.of(file.getInputStream())
                 .size(800, 600)
@@ -256,11 +210,5 @@ public class OwnerController {
 
         String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
         return "data:image/jpeg;base64," + base64;
-    }
-
-    @DeleteMapping("/order/{order_id}")
-    public ResultResponse<Void> deleteOrder(@PathVariable Long order_id){
-        ownerService.deleteOrder(order_id);
-        return new ResultResponse<>("주문 삭제 성공", null);
     }
 }

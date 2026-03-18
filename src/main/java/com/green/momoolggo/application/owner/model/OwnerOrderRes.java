@@ -12,7 +12,9 @@ public class OwnerOrderRes {
     private Long orderId;
     private Long userNo;        // customerName -> userNo 로 변경
     private String orderDate;
-    private List<String> menuList;
+    private String menuList;
     private int totalPrice;
     private String state;       // orderState(int) -> state(String) 로 변경 (DB가 PENDING, WATING 문자열이라서)
+    private String address;
+    private String request;
 }

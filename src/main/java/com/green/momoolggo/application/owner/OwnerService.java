@@ -44,14 +44,6 @@ public class OwnerService {
         return ownerMapper.getStoreById(dto.getStoreId());
     }
 
-    // ★ 가게 이미지 수정 (추가)
-    public void updateStoreImage(Long storeId, String dataUri) {
-        int result = ownerMapper.updateStoreImage(storeId, dataUri);
-        if (result == 0) {
-            throw new RuntimeException("가게 이미지 수정 실패: 해당 가게를 찾을 수 없음");
-        }
-    }
-
     // 가게 삭제
     public void deleteStore(Long store_id){
         int result = ownerMapper.deleteStore(store_id);
@@ -59,6 +51,13 @@ public class OwnerService {
             throw new RuntimeException("삭제할 가게를 찾을 수 없습니다.");
         }
     }
+
+    // 로그인할 때 가게 불러오기
+    public OwnerStoreRes getMyStore(long ownerNo) {
+        return ownerMapper.getMyStore(ownerNo);
+    }
+
+    // ========== 주문 관련 ==========
 
     // 가게 주문 조회 (날짜 필터 추가)
     public List<OwnerOrderRes> getOrders(Long storeId, Integer state, String date) {
@@ -72,6 +71,15 @@ public class OwnerService {
             throw new RuntimeException("주문 상태 변경 실패: 주문을 찾을 수 없습니다.");
         }
     }
+
+    // 주문 삭제
+    @Transactional
+    public void deleteOrder(Long orderId){
+        ownerMapper.deleteOrderDetail(orderId);
+        ownerMapper.deleteOrder(orderId);
+    }
+
+    // ========== 메뉴 관련 ==========
 
     // 가게 메뉴 등록
     public OwnerMenuRes registerMenu(OwnerMenuRegReq dto){
@@ -89,14 +97,6 @@ public class OwnerService {
         return ownerMapper.getMenuById(dto.getMenuId());
     }
 
-    // ★ 메뉴 이미지 수정 (추가)
-    public void updateMenuImage(Long menuId, String dataUri) {
-        int result = ownerMapper.updateMenuImage(menuId, dataUri);
-        if (result == 0) {
-            throw new RuntimeException("메뉴 이미지 수정 실패: 해당 메뉴를 찾을 수 없음");
-        }
-    }
-
     // 가게 메뉴 삭제
     @Transactional
     public Long deleteMenu(Long menuId){
@@ -107,12 +107,12 @@ public class OwnerService {
         return menuId;
     }
 
-    // 로그인할 때 가게 불러오기
-    public OwnerStoreRes getMyStore(long ownerNo) {
-        return ownerMapper.getMyStore(ownerNo);
+    public List<OwnerMenuRes> getMenusByStoreId(Long storeId) {
+        return ownerMapper.getMenusByStoreId(storeId);
     }
 
-    // 매출관리
+    // ========== 매출 관련 ==========
+
     public OwnerSalesStatsRes getSalesStats(long storeId, String period) {
         return ownerMapper.getSalesStats(storeId, period);
     }
@@ -121,11 +121,8 @@ public class OwnerService {
         return ownerMapper.getSalesRanking(storeId, period);
     }
 
-    public List<OwnerMenuRes> getMenusByStoreId(Long storeId) {
-        return ownerMapper.getMenusByStoreId(storeId);
-    }
+    // ========== 카테고리 관련 ==========
 
-    // 메뉴 카테고리 관련
     public List<Map<String, Object>> getCategoriesByStoreId(Long storeId) {
         return ownerMapper.getCategoriesByStoreId(storeId);
     }
@@ -140,15 +137,5 @@ public class OwnerService {
 
     public void deleteCategory(Long categoryId) {
         ownerMapper.deleteCategory(categoryId);
-    }
-
-    // ★ 기존 uploadMenuImage 메서드 삭제됨
-    // → 이미지 변환 로직이 Controller의 convertToDataUri()로 이동
-    // → 로컬 파일 저장 없이 Base64 data URI를 DB에 직접 저장
-
-    @Transactional
-    public void deleteOrder(Long orderId){
-        ownerMapper.deleteOrderDetail(orderId);  // 상세 먼저 삭제
-        ownerMapper.deleteOrder(orderId);         // 주문 삭제
     }
 }
