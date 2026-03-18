@@ -57,6 +57,11 @@ public class StoreService {
             return List.of();
 
         }
-        return storeMapper.searchStore(searchText);}
+        return storeMapper.searchStore(searchText);
+    }
+
+    public List<StoreGetRes> findNearbyStores(double lat, double lng) {
+        return storeMapper.findNearby(lat, lng);
+    }
 
 }

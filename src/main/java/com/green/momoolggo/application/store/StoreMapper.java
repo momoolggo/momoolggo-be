@@ -17,4 +17,5 @@ public interface StoreMapper {
     int deleteWish(FavoriteToggleReq req);
     int insertWish(FavoriteToggleReq req);
     List<StoreGetRes> searchStore(@Param("searchText") String searchText);
+    List<StoreGetRes> findNearby(@Param("lat") double lat, @Param("lng") double lng);
 }

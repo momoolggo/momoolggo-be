@@ -59,5 +59,13 @@ public class StoreController {
 
         return new ResultResponse<>("찜 목록 조회 성공", result);
     }
+
+    @GetMapping("/nearby")
+    public ResultResponse<?> getNearbyStores(
+            @RequestParam double lat,
+            @RequestParam double lng) {
+        List<StoreGetRes> result = storeService.findNearbyStores(lat, lng);
+        return new ResultResponse<>("주변 가게 조회 성공", result);
+    }
 }
 
