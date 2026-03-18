@@ -127,7 +127,8 @@
         SET name = #{name},
             menu_info = #{menuInfo},
             price = #{price},
-            menu_pic = #{menuPic}
+            menu_pic = #{menuPic},
+            category_id = #{categoryId}
         WHERE menu_id = #{menuId}
     </update>
 
