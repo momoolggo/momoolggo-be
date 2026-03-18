@@ -50,7 +50,9 @@
         UPDATE store
         SET holiday = #{holiday},
             notice = #{notice},
-            state = #{state}
+            state = #{state},
+            business_hours = #{businessHours},
+            min_price = #{minPrice}
         WHERE store_id = #{storeId}
     </update>
 
@@ -160,30 +162,41 @@
 
     <!-- 내 가게 조회 -->
     <select id="getMyStore" resultType="com.green.momoolggo.application.owner.model.OwnerStoreRes">
-        SELECT store_id AS storeId, store_name AS storeName
+        SELECT
+            store_id AS storeId,
+            store_name AS storeName,
+            location,
+            store_tel AS storeTel,
+            business_number AS businessNumber,
+            store_pic AS storePic,
+            store_info AS storeInfo,
+            state,
+            holiday,
+            notice,
+            business_hours AS businessHours,
+            min_price AS minPrice
         FROM store
         WHERE owner_id = #{ownerNo}
             LIMIT 1
     </select>
-
     <!-- 기간별 매출 통계 -->
     <select id="getSalesStats" resultType="com.green.momoolggo.application.owner.model.OwnerSalesStatsRes">
         SELECT
         COUNT(o.order_id) AS orderCount,
-        SUM(o.amount) AS totalSales
+        IFNULL(SUM(o.amount), 0) AS totalSales
         FROM orders o
         WHERE o.store_id = #{storeId}
         AND o.order_state != 2
-        <if test="period == '일간'">
+        <if test="period == 'day'">
             AND DATE(o.order_time) = CURDATE()
         </if>
-        <if test="period == '주간'">
+        <if test="period == 'week'">
             AND o.order_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
         </if>
-        <if test="period == '월간'">
+        <if test="period == 'month'">
             AND o.order_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         </if>
-        <if test="period == '연간'">
+        <if test="period == 'year'">
             AND o.order_time >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         </if>
     </select>
@@ -193,21 +206,67 @@
         SELECT
         od.menu_name AS menuName,
         SUM(od.quantity) AS totalQuantity,
-        SUM(od.menu_price * od.quantity) AS totalSales
+        SUM(od.menu_price * od.quantity) AS totalSales,
+        IFNULL((
+        SELECT SUM(od2.quantity)
+        FROM orders o2
+        JOIN order_detail od2 ON o2.order_id = od2.order_id
+        WHERE o2.store_id = #{storeId}
+        AND od2.menu_name = od.menu_name
+        AND o2.order_state != 2
+        <if test="period == 'day'">
+            AND DATE(o2.order_time) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+        </if>
+        <if test="period == 'week'">
+            AND o2.order_time BETWEEN DATE_SUB(CURDATE(), INTERVAL 14 DAY)
+            AND DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        </if>
+        <if test="period == 'month'">
+            AND o2.order_time BETWEEN DATE_SUB(CURDATE(), INTERVAL 2 MONTH)
+            AND DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        </if>
+        <if test="period == 'year'">
+            AND o2.order_time BETWEEN DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+            AND DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        </if>
+        ), 0) AS prevQuantity,
+        IFNULL((
+        SELECT SUM(od2.menu_price * od2.quantity)
+        FROM orders o2
+        JOIN order_detail od2 ON o2.order_id = od2.order_id
+        WHERE o2.store_id = #{storeId}
+        AND od2.menu_name = od.menu_name
+        AND o2.order_state != 2
+        <if test="period == 'day'">
+            AND DATE(o2.order_time) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+        </if>
+        <if test="period == 'week'">
+            AND o2.order_time BETWEEN DATE_SUB(CURDATE(), INTERVAL 14 DAY)
+            AND DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        </if>
+        <if test="period == 'month'">
+            AND o2.order_time BETWEEN DATE_SUB(CURDATE(), INTERVAL 2 MONTH)
+            AND DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        </if>
+        <if test="period == 'year'">
+            AND o2.order_time BETWEEN DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+            AND DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        </if>
+        ), 0) AS prevSales
         FROM orders o
         JOIN order_detail od ON o.order_id = od.order_id
         WHERE o.store_id = #{storeId}
         AND o.order_state != 2
-        <if test="period == '일간'">
+        <if test="period == 'day'">
             AND DATE(o.order_time) = CURDATE()
         </if>
-        <if test="period == '주간'">
+        <if test="period == 'week'">
             AND o.order_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
         </if>
-        <if test="period == '월간'">
+        <if test="period == 'month'">
             AND o.order_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         </if>
-        <if test="period == '연간'">
+        <if test="period == 'year'">
             AND o.order_time >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         </if>
         GROUP BY od.menu_name
