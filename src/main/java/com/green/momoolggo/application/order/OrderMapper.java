@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface OrderMapper {
-
+    long findUserNoByOrderId(long orderId);
     // 유저 전화번호 조회
     String findTelByUserNo(@Param("userNo") Long userNo);
 
@@ -15,7 +15,8 @@ public interface OrderMapper {
     OrderAddressInfo findDefaultAddress(@Param("userNo") Long userNo);
 
     // 주문 INSERT
-    void insertOrder(@Param("userNo")    Long    userNo,
+    void insertOrder(@Param("uniqueId") Long uniqueId,
+                     @Param("userNo")    Long    userNo,
                      @Param("storeId")   Long    storeId,
                      @Param("request")   String  request,
                      @Param("riderReq")  String  riderRequest,
@@ -25,13 +26,11 @@ public interface OrderMapper {
                      @Param("amount")    Integer amount,
                      @Param("payState")  Integer payState);
 
-    // 방금 INSERT한 order_id
-    Long getLastOrderId();
 
     // 주문 상세 INSERT
-    void insertOrderDetail(@Param("orderId")    Long    orderId,
+    void insertOrderDetail(@Param("uniqueId")    Long    uniqueId,
                            @Param("menuId")     Long    menuId,
                            @Param("quantity")   Integer quantity,
                            @Param("menuName")   String  menuName,
-                           @Param("menuPrice")  Integer menuPrice);
+                           @Param("menuPrice")  Integer price);
 }

@@ -24,6 +24,7 @@
     <select id="findCartItems">
         SELECT
             cd.cart_item_id AS id,
+            cd.menu_id AS menuID,
             m.name          AS menuName,
             m.price         AS price,
             cd.quantity     AS quantity,

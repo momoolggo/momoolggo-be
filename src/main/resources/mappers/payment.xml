@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.green.momoolggo.application.payment.PaymentMapper">
+
+    <insert id="insertPayment" parameterType="com.green.momoolggo.application.payment.model.PaymentEntity">
+        INSERT INTO payment (order_id, payment_key, amount, pay_state)
+        VALUES (#{orderId}, #{paymentKey}, #{amount}, #{payState})
+    </insert>
+
+
+</mapper>

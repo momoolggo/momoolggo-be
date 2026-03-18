@@ -30,7 +30,7 @@ public class OrderController {
     public ResponseEntity<?> placeOrder(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody OrderReqDto dto) {
-        orderService.placeOrder(principal.getSignedUserNo(), dto);
-        return ResponseEntity.ok(Map.of("result", "success"));
+        long orderId = orderService.placeOrder(principal.getSignedUserNo(), dto);
+        return ResponseEntity.ok(Map.of("result", "success","orderId", orderId));
     }
 }
