@@ -110,4 +110,24 @@
     <insert id="insertWish">
  insert into likedstore set user_no=#{userNo}, store_id=#{storeId}
     </insert>
+
+    <!-- 주변 가게 검색 (3km 이내) -->
+    <select id="findNearby" resultType="com.green.momoolggo.application.store.model.StoreGetRes">
+        SELECT
+            s.store_id AS id,
+            s.store_name AS name,
+            s.min_price AS min,
+        s.rating_avg AS avg,
+        s.rating_count AS sum,
+        s.order_count AS count,
+        s.store_pic AS pic,
+        (6371 * ACOS(
+            COS(RADIANS(#{lat})) * COS(RADIANS(s.latitude)) *
+            COS(RADIANS(s.longitude) - RADIANS(#{lng})) +
+            SIN(RADIANS(#{lat})) * SIN(RADIANS(s.latitude))
+            )) AS distance
+        FROM store s
+        HAVING distance &lt;= 3
+        ORDER BY distance ASC
+    </select>
 </mapper>
