@@ -84,15 +84,20 @@
         SELECT
         o.order_id AS orderId,
         o.user_no AS userNo,
-        o.order_time AS orderDate,
+        DATE_FORMAT(o.order_time, '%H:%i') AS orderDate,
         o.amount AS totalPrice,
         o.order_state AS state,
-        GROUP_CONCAT(od.menu_name SEPARATOR ', ') AS menuList
+        o.address AS address,
+        o.request AS request,
+        GROUP_CONCAT(CONCAT(od.menu_name, ' x', od.quantity) SEPARATOR ', ') AS menuList
         FROM orders o
         JOIN order_detail od ON o.order_id = od.order_id
         WHERE o.store_id = #{storeId}
-        <if test="state != null and state != ''">
+        <if test="state != null">
             AND o.order_state = #{state}
+        </if>
+        <if test="date != null and date != ''">
+            AND DATE(o.order_time) = #{date}
         </if>
         GROUP BY o.order_id
         ORDER BY o.order_time DESC
@@ -316,6 +321,14 @@
     <delete id="deleteCategory">
         DELETE FROM menu_category
         WHERE category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteOrderDetail">
+        DELETE FROM order_detail WHERE order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteOrder">
+        DELETE FROM orders WHERE order_id = #{orderId}
     </delete>
 
 </mapper>

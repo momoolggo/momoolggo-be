@@ -21,7 +21,7 @@
             LIMIT 1
     </select>
 
-    <!-- 주문 INSERT -->
+    <!-- 주문 INSERT (짧은 ID 자동 생성) -->
     <insert id="insertOrder">
         INSERT INTO orders
         (order_id, user_no, store_id, request, address, address_detail,
@@ -38,7 +38,6 @@
         VALUES
             (#{uniqueId}, #{menuId}, #{quantity}, #{menuName}, #{menuPrice})
     </insert>
-
 
     <select id="findUserNoByOrderId" resultType="long">
         SELECT user_no

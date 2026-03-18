@@ -2,19 +2,13 @@ package com.green.momoolggo.application.owner;
 
 
 import com.green.momoolggo.application.owner.model.*;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.plaf.PanelUI;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -58,19 +52,34 @@ public class OwnerService {
         }
     }
 
-    // 가게 주문 조회
-    public List<OwnerOrderRes> getOrders(Long storedId, Integer state){
-        return ownerMapper.getOrders(storedId, state);
+    // 로그인할 때 가게 불러오기
+    public OwnerStoreRes getMyStore(long ownerNo) {
+        return ownerMapper.getMyStore(ownerNo);
+    }
+
+    // ========== 주문 관련 ==========
+
+    // 가게 주문 조회 (날짜 필터 추가)
+    public List<OwnerOrderRes> getOrders(Long storeId, Integer state, String date) {
+        return ownerMapper.getOrders(storeId, state, date);
     }
 
     // 주문 상태 수정
-
     public void updateOrderState(OwnerOrderStateReq req){
         int result = ownerMapper.updateOrderState(req);
         if (result == 0){
             throw new RuntimeException("주문 상태 변경 실패: 주문을 찾을 수 없습니다.");
         }
     }
+
+    // 주문 삭제
+    @Transactional
+    public void deleteOrder(Long orderId){
+        ownerMapper.deleteOrderDetail(orderId);
+        ownerMapper.deleteOrder(orderId);
+    }
+
+    // ========== 메뉴 관련 ==========
 
     // 가게 메뉴 등록
     public OwnerMenuRes registerMenu(OwnerMenuRegReq dto){
@@ -98,12 +107,12 @@ public class OwnerService {
         return menuId;
     }
 
-    //로그인할 때 가게 불러오기
-    public OwnerStoreRes getMyStore(long ownerNo) {
-        return ownerMapper.getMyStore(ownerNo);
+    public List<OwnerMenuRes> getMenusByStoreId(Long storeId) {
+        return ownerMapper.getMenusByStoreId(storeId);
     }
 
-    //매출관리
+    // ========== 매출 관련 ==========
+
     public OwnerSalesStatsRes getSalesStats(long storeId, String period) {
         return ownerMapper.getSalesStats(storeId, period);
     }
@@ -112,11 +121,8 @@ public class OwnerService {
         return ownerMapper.getSalesRanking(storeId, period);
     }
 
-    public List<OwnerMenuRes> getMenusByStoreId(Long storeId) {
-        return ownerMapper.getMenusByStoreId(storeId);
-    }
+    // ========== 카테고리 관련 ==========
 
-    //메뉴 카테고리 관련
     public List<Map<String, Object>> getCategoriesByStoreId(Long storeId) {
         return ownerMapper.getCategoriesByStoreId(storeId);
     }
@@ -132,28 +138,4 @@ public class OwnerService {
     public void deleteCategory(Long categoryId) {
         ownerMapper.deleteCategory(categoryId);
     }
-
-    public String uploadMenuImage(MultipartFile file, String uploadPath) {
-        try {
-            // 저장 폴더 생성
-            File dir = new File(uploadPath);
-            if (!dir.exists()) dir.mkdirs();
-
-            // 파일명 중복 방지
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            File savedFile = new File(uploadPath + fileName);
-
-            // 압축해서 저장 (30MB → 약 1MB 이하)
-            Thumbnails.of(file.getInputStream())
-                    .size(800, 600)
-                    .outputQuality(0.8)
-                    .toFile(savedFile);
-
-            return "/uploads/menu/" + fileName;  // DB에 저장될 경로
-
-        } catch (Exception e) {
-            throw new RuntimeException("이미지 업로드 실패");
-        }
-    }
-
 }
