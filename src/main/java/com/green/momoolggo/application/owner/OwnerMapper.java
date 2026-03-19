@@ -26,48 +26,40 @@ public interface OwnerMapper {
     // 가게 삭제
     int deleteStore(Long storeId);
 
-    // 로그인할 때 가게 불러오기
+    // 내 가게 1개 조회 (매출 등 내부용)
     OwnerStoreRes getMyStore(long ownerNo);
+
+    // 내 가게 목록 조회 (여러 가게 지원)
+    List<OwnerStoreRes> getMyStores(long ownerNo);
 
     // ========== 주문 관련 ==========
 
-    // 주문 목록 조회 (날짜 필터 추가)
     List<OwnerOrderRes> getOrders(@Param("storeId") Long storeId,
                                   @Param("state") Integer state,
                                   @Param("date") String date);
 
-    // 주문 상태 수정
     int updateOrderState(OwnerOrderStateReq req);
 
-    // 주문 상세 삭제 (order_detail 먼저)
     void deleteOrderDetail(Long orderId);
 
-    // 주문 삭제
     void deleteOrder(Long orderId);
 
     // ========== 메뉴 관련 ==========
 
-    // 메뉴 등록
     int registerMenu(OwnerMenuRegReq dto);
 
-    // 등록 메뉴 상세조회
     OwnerMenuRes getMenuById(Long menuId);
 
-    // 메뉴 수정
     int updateMenu(OwnerMenuUpdateReq dto);
 
-    // 메뉴 삭제
     int deleteMenu(Long menuId);
 
-    // 메뉴 목록 조회
     List<OwnerMenuRes> getMenusByStoreId(Long storeId);
 
     // ========== 카테고리 관련 ==========
 
-    // 메뉴 카테고리 자동 생성
     void registerDefaultMenuCategory(long userId);
 
-    // 가게 카테고리 설정
     void registerStoreCategory(@Param("userId") long userId, @Param("categoryId") long categoryId);
 
     List<Map<String, Object>> getCategoriesByStoreId(Long storeId);

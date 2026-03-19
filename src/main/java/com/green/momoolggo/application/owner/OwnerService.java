@@ -4,11 +4,16 @@ package com.green.momoolggo.application.owner;
 import com.green.momoolggo.application.owner.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -17,10 +22,43 @@ public class OwnerService {
 
     private final OwnerMapper ownerMapper;
 
-    // 가게 등록
+    // ========== 이미지 업로드 (공통) ==========
+
+    public String uploadImage(MultipartFile file, String uploadPath, String urlPrefix) {
+        try {
+            if (file.isEmpty()) {
+                throw new IllegalArgumentException("파일이 비어있습니다.");
+            }
+
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new IllegalArgumentException("이미지 파일만 업로드 가능합니다.");
+            }
+
+            File dir = new File(uploadPath);
+            if (!dir.exists()) dir.mkdirs();
+
+            String originalName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "_" + originalName;
+            File savedFile = new File(uploadPath + fileName);
+
+            Thumbnails.of(file.getInputStream())
+                    .size(800, 600)
+                    .outputQuality(0.8)
+                    .toFile(savedFile);
+
+            log.info("이미지 저장 완료: {}", savedFile.getAbsolutePath());
+            return urlPrefix + fileName;
+
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 업로드 실패: " + e.getMessage());
+        }
+    }
+
+    // ========== 가게 관련 ==========
+
     public void registerStore(OwnerStoreRegReq dto){
         log.info("가게 등록 로직 시작: {}", dto.getStoreName());
-        log.info("상세주소: {}", dto.getAddressDetail());
         int result = ownerMapper.registerStore(dto);
         if (result == 0) {
             throw new RuntimeException("가게 등록 실패");
@@ -29,7 +67,6 @@ public class OwnerService {
         ownerMapper.registerDefaultMenuCategory(dto.getUserId());
     }
 
-    // 가게 기본 정보 수정
     public void updateStore(OwnerStoreUpdateReq dto){
         int result = ownerMapper.updateStore(dto);
         if (result == 0){
@@ -37,14 +74,12 @@ public class OwnerService {
         }
     }
 
-    // 가게 운영정보 수정
     @Transactional
     public OwnerStoreRes updateStoreStatus(OwnerStoreUpdateStatusReq dto){
         ownerMapper.updateStoreStatus(dto);
         return ownerMapper.getStoreById(dto.getStoreId());
     }
 
-    // 가게 삭제
     public void deleteStore(Long store_id){
         int result = ownerMapper.deleteStore(store_id);
         if (result == 0){
@@ -52,19 +87,22 @@ public class OwnerService {
         }
     }
 
-    // 로그인할 때 가게 불러오기
+    // 내 가게 1개 조회 (매출 조회 등 내부용)
     public OwnerStoreRes getMyStore(long ownerNo) {
         return ownerMapper.getMyStore(ownerNo);
     }
 
+    // 내 가게 목록 조회 (여러 가게 지원)
+    public List<OwnerStoreRes> getMyStores(long ownerNo) {
+        return ownerMapper.getMyStores(ownerNo);
+    }
+
     // ========== 주문 관련 ==========
 
-    // 가게 주문 조회 (날짜 필터 추가)
     public List<OwnerOrderRes> getOrders(Long storeId, Integer state, String date) {
         return ownerMapper.getOrders(storeId, state, date);
     }
 
-    // 주문 상태 수정
     public void updateOrderState(OwnerOrderStateReq req){
         int result = ownerMapper.updateOrderState(req);
         if (result == 0){
@@ -72,7 +110,6 @@ public class OwnerService {
         }
     }
 
-    // 주문 삭제
     @Transactional
     public void deleteOrder(Long orderId){
         ownerMapper.deleteOrderDetail(orderId);
@@ -81,13 +118,11 @@ public class OwnerService {
 
     // ========== 메뉴 관련 ==========
 
-    // 가게 메뉴 등록
     public OwnerMenuRes registerMenu(OwnerMenuRegReq dto){
         ownerMapper.registerMenu(dto);
         return ownerMapper.getMenuById(dto.getMenuId());
     }
 
-    // 가게 메뉴 수정
     @Transactional
     public OwnerMenuRes updateMenu(OwnerMenuUpdateReq dto){
         int result = ownerMapper.updateMenu(dto);
@@ -97,7 +132,6 @@ public class OwnerService {
         return ownerMapper.getMenuById(dto.getMenuId());
     }
 
-    // 가게 메뉴 삭제
     @Transactional
     public Long deleteMenu(Long menuId){
         int result = ownerMapper.deleteMenu(menuId);
