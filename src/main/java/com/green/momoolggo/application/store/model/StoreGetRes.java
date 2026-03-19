@@ -15,4 +15,5 @@ public class StoreGetRes {
     private int avg;
     private String pic;
     private double distance;
+    private int state;
 }
