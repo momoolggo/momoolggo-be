@@ -9,9 +9,14 @@ import com.green.momoolggo.configuration.security.JwtTokenManager;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -84,5 +89,35 @@ public class UserService {
         }
         req.setUserNo(userNo);
         userMapper.update(req);
+    }
+
+    public void postReview(long user, ReviewReq req) {
+        try {
+            long userId = userMapper.checkReviewWriter(req);
+            if (userId == user) {
+                userMapper.postReview(req);
+            } else {
+                throw new RuntimeException("주문한사용자가 아닙니다");
+            }
+        } catch (DuplicateKeyException e) {
+            throw new RuntimeException("이미 리뷰가 등록되었습니다");
+        }
+    }
+
+    public Map<String, Object> getReviews(GetReviewReq req) {
+        int totalCount = userMapper.countReviews(req.getUserNo());
+        List<ReviewRes> list = userMapper.getReviews(req);
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", list);
+        result.put("totalCount", totalCount);
+        result.put("totalPages", (int) Math.ceil((double) totalCount / req.getSize()));
+        result.put("currentPage", req.getCurrentPage());
+        return result;
+    }
+
+    public void deleteReview(long userNo, long reviewId) {
+        // 본인 리뷰인지 검증 후 삭제
+        int result = userMapper.deleteReview(userNo, reviewId);
+        if (result == 0) throw new RuntimeException("삭제 권한이 없습니다.");
     }
 }

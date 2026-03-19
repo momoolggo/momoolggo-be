@@ -1,9 +1,10 @@
 package com.green.momoolggo.application.user;
 
-import com.green.momoolggo.application.user.model.User;
-import com.green.momoolggo.application.user.model.UserSignupReq;
-import com.green.momoolggo.application.user.model.UserUpdateReq;
+import com.green.momoolggo.application.user.model.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -20,4 +21,12 @@ public interface UserMapper {
     User findByUserNo(Long userNo);
 
     int update(UserUpdateReq req);
+
+    int postReview(ReviewReq req);
+
+    long checkReviewWriter(ReviewReq req);
+
+    List<ReviewRes> getReviews(GetReviewReq req);
+    int countReviews(long userNo);
+    int deleteReview(@Param("userNo") long userNo, @Param("reviewId") long reviewId);
 }
