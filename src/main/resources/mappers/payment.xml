@@ -8,5 +8,10 @@
         VALUES (#{orderId}, #{paymentKey}, #{amount}, #{payState})
     </insert>
 
+    <select id="existsByOrderId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM orders
+        WHERE order_id = #{orderId} and pay_state>1
+    </select>
 
 </mapper>
