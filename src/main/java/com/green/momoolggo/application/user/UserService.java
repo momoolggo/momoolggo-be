@@ -51,7 +51,7 @@ public class UserService {
             addressReq.setAddressDetail(req.getAddressDetail());
             addressReq.setLat(req.getLat());
             addressReq.setLng(req.getLng());
-            addressReq.setDefaultAd(1);  // 첫 주소는 기본주소
+            addressReq.setDefaultAd(1);
             userAddressMapper.save(addressReq);
         }
     }
@@ -91,11 +91,18 @@ public class UserService {
         userMapper.update(req);
     }
 
+    // ========== 리뷰 관련 ==========
+
+    // 리뷰 등록 + 가게 별점 자동 갱신
+    @Transactional
     public void postReview(long user, ReviewReq req) {
         try {
             long userId = userMapper.checkReviewWriter(req);
             if (userId == user) {
                 userMapper.postReview(req);
+                // 가게 별점 갱신
+                long storeId = userMapper.findStoreIdByOrderId(req.getOrderId());
+                userMapper.updateStoreRating(storeId);
             } else {
                 throw new RuntimeException("주문한사용자가 아닙니다");
             }
@@ -104,6 +111,7 @@ public class UserService {
         }
     }
 
+    // 리뷰 목록 조회
     public Map<String, Object> getReviews(GetReviewReq req) {
         int totalCount = userMapper.countReviews(req.getUserNo());
         List<ReviewRes> list = userMapper.getReviews(req);
@@ -115,9 +123,31 @@ public class UserService {
         return result;
     }
 
+    // 리뷰 삭제 + 가게 별점 자동 갱신
+    @Transactional
     public void deleteReview(long userNo, long reviewId) {
-        // 본인 리뷰인지 검증 후 삭제
+        // 삭제 전에 가게 ID를 먼저 조회
+        long storeId = userMapper.findStoreIdByReviewId(reviewId);
         int result = userMapper.deleteReview(userNo, reviewId);
         if (result == 0) throw new RuntimeException("삭제 권한이 없습니다.");
+        // 삭제 후 가게 별점 갱신
+        userMapper.updateStoreRating(storeId);
+    }
+
+    // 리뷰 단건 조회
+    public Map<String, Object> getReviewById(long reviewId) {
+        Map<String, Object> review = userMapper.getReviewById(reviewId);
+        if (review == null) throw new RuntimeException("리뷰를 찾을 수 없습니다.");
+        return review;
+    }
+
+    // 리뷰 수정 + 가게 별점 자동 갱신
+    @Transactional
+    public void updateReview(long userNo, long reviewId, int rating, String contents) {
+        int result = userMapper.updateReview(reviewId, userNo, rating, contents);
+        if (result == 0) throw new RuntimeException("수정 권한이 없거나 리뷰를 찾을 수 없습니다.");
+        // 수정 후 가게 별점 갱신
+        long storeId = userMapper.findStoreIdByReviewId(reviewId);
+        userMapper.updateStoreRating(storeId);
     }
 }

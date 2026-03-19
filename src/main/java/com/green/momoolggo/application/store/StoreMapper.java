@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+
 @Mapper
 
 public interface StoreMapper {
@@ -18,4 +20,7 @@ public interface StoreMapper {
     int insertWish(FavoriteToggleReq req);
     List<StoreGetRes> searchStore(@Param("searchText") String searchText);
     List<StoreGetRes> findNearby(@Param("lat") double lat, @Param("lng") double lng);
+
+    //가게 리뷰 조회
+    List<Map<String, Object>> getStoreReviews(long storeId);
 }

@@ -64,4 +64,9 @@ public class StoreService {
         return storeMapper.findNearby(lat, lng);
     }
 
+    //가게 리뷰 조회
+    public List<Map<String, Object>> getStoreReviews(long storeId) {
+        return storeMapper.getStoreReviews(storeId);
+    }
+
 }
