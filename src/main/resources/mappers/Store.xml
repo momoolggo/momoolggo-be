@@ -14,7 +14,7 @@
 <!--    </select>-->
 
     <select id="findAll"> <!--가게목록리스트-->
-    SELECT s.store_id id , s.store_name name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic pic
+    SELECT s.store_id id , s.store_name name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic pic, s.state
     FROM store s join store_category c on s.store_id=c.store_id
     <where>
         <if test="searchText != null and searchText != ''">
@@ -53,7 +53,7 @@
     </select>
 
     <select id="searchStore">
-        SELECT distinct s.store_id AS id, s.store_name AS name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic AS pic
+        SELECT distinct s.store_id AS id, s.store_name AS name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic AS pic, s.state
         FROM store s
                  JOIN store_category sc ON s.store_id = sc.store_id
                  LEFT JOIN menu_category mc ON mc.store_id = s.store_id
@@ -85,7 +85,8 @@
             s.rating_avg AS avg,
             s.rating_count AS sum,
             s.order_count AS count,
-            s.store_pic AS pic
+            s.store_pic AS pic,
+            s.state
         FROM likedstore l
             JOIN store s ON l.store_id = s.store_id
         WHERE l.user_no = #{userNo}
@@ -119,6 +120,7 @@
             s.min_price AS min,
         s.rating_avg AS avg,
         s.rating_count AS sum,
+        s.state,
         s.order_count AS count,
         s.store_pic AS pic,
         (6371 * ACOS(
