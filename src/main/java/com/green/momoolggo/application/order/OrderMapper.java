@@ -1,16 +1,22 @@
 package com.green.momoolggo.application.order;
 
-import com.green.momoolggo.application.order.model.OrderAddressInfo;
-import com.green.momoolggo.application.order.model.OrderReqDto;
+import com.green.momoolggo.application.order.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface OrderMapper {
     long findUserNoByOrderId(long orderId);
+    int deleteOrder(long id);
+    //주문의 state 변경
+    int updateState(OrderState orderstate);
+
     // 유저 전화번호 조회
     String findTelByUserNo(@Param("userNo") Long userNo);
 
+    Orders findByOrderId(Long orderId);
     // 기본 배송지 조회
     OrderAddressInfo findDefaultAddress(@Param("userNo") Long userNo);
 
@@ -19,7 +25,7 @@ public interface OrderMapper {
                      @Param("userNo")    Long    userNo,
                      @Param("storeId")   Long    storeId,
                      @Param("request")   String  request,
-                     @Param("riderReq")  String  riderRequest,
+                     @Param("riderRequest")  String  riderRequest,
                      @Param("address")   String  address,
                      @Param("addressDetail") String addressDetail,
                      @Param("deliveryFee")   Integer deliveryFee,
@@ -33,4 +39,9 @@ public interface OrderMapper {
                            @Param("quantity")   Integer quantity,
                            @Param("menuName")   String  menuName,
                            @Param("menuPrice")  Integer price);
+    List<OrderHistoryDto> findOrdersByUserId(OrderHistoryReq req);           // 주문 목록
+    List<OrderHistoryDto.OrderItemDto> findItemsByOrderId(Long orderId); // 메뉴 목록
+    OrderHistoryDto orderHistoryDetail(long id);
+
+
 }

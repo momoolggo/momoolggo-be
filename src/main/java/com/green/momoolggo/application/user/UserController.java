@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
@@ -107,5 +110,27 @@ public class UserController {
         jwtTokenManager.setAccessTokenInCookie(res, jwtUser);
 
         return ResponseEntity.ok(new ResultResponse<>("AT 재발급 성공", null));
+    }
+
+    //리뷰 관련
+    @PostMapping("/review")
+    public void postReview(@AuthenticationPrincipal UserPrincipal userPrincipal ,@RequestBody ReviewReq req){
+        userService.postReview(userPrincipal.getSignedUserNo(),req);
+    }
+
+    @GetMapping("/review")
+    public ResponseEntity<Map<String, Object>> getReviews(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @ModelAttribute GetReviewReq req) {
+        req.setUserNo(principal.getSignedUserNo());
+        return ResponseEntity.ok(userService.getReviews(req));
+    }
+
+    @DeleteMapping("/review/{reviewId}")
+    public ResponseEntity<?> deleteReview(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable long reviewId) {
+        userService.deleteReview(principal.getSignedUserNo(), reviewId);
+        return ResponseEntity.ok(Map.of("result", "삭제성공"));
     }
 }

@@ -71,7 +71,6 @@ public class WebSecurityConfiguration {
 
                         // ── 나머지 요청은 로그인 필수
                         // (유저 조회/수정, 찜, 장바구니, 주문, 리뷰 작성 등)
-                        .requestMatchers(HttpMethod.POST, "/api/payment/confirm").permitAll()
                         .anyRequest().authenticated()
                 )
                 // Spring Security 기본 로그인 필터 앞에 JWT 필터를 끼워 넣음

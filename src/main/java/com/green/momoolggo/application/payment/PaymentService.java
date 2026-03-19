@@ -2,10 +2,13 @@ package com.green.momoolggo.application.payment;
 
 import com.green.momoolggo.application.cart.CartMapper;
 import com.green.momoolggo.application.order.OrderMapper;
+import com.green.momoolggo.application.order.model.OrderState;
+import com.green.momoolggo.application.order.model.Orders;
 import com.green.momoolggo.application.payment.model.PaymentConfirmReq;
 import com.green.momoolggo.application.payment.model
         .PaymentEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
@@ -16,23 +19,45 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import com.green.momoolggo.application.cart.model.Cart;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j  // ✅ 추가
 public class PaymentService {
 
     private final PaymentMapper paymentMapper;
     private final CartMapper cartMapper;
     private final OrderMapper orderMapper;
-    private static final String SECRET_KEY = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6"; // 🔑 실제키로 교체
 
+    private static final String SECRET_KEY = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
+    @Transactional
     public void confirmPayment(PaymentConfirmReq req) throws Exception {
 
-        // 1. 토스 승인 API 호출
+        // ✅ 1. orderId로 주문 조회
+        Long orderId = Long.parseLong(req.getOrderId());
+        Orders order = orderMapper.findByOrderId(orderId);
+
+        if (order == null) {
+            throw new RuntimeException("존재하지 않는 주문입니다.");
+        }
+
+        // ✅ 2. 요청한 금액이 실제 주문 금액과 같은지 검증
+        if (order.getAmount() != req.getAmount()) {
+            throw new RuntimeException("결제 금액이 일치하지 않습니다.");
+        }
+
+        // ✅ 3. 이미 결제된 주문인지 검증
+        boolean alreadyPaid = paymentMapper.existsByOrderId(orderId);
+        if (alreadyPaid) {
+            throw new RuntimeException("이미 결제된 주문입니다.");
+        }
         JSONObject requestBody = new JSONObject();
         requestBody.put("paymentKey", req.getPaymentKey());
         requestBody.put("orderId",    req.getOrderId());
         requestBody.put("amount",     req.getAmount());
+
+        log.info("토스 요청 바디: {}", requestBody.toJSONString()); // ✅ 추가
 
         String encoded = Base64.getEncoder()
                 .encodeToString((SECRET_KEY + ":").getBytes(StandardCharsets.UTF_8));
@@ -49,6 +74,8 @@ public class PaymentService {
         }
 
         int code = connection.getResponseCode();
+        log.info("토스 응답 코드: {}", code); // ✅ 추가
+
         InputStream responseStream = code == 200
                 ? connection.getInputStream()
                 : connection.getErrorStream();
@@ -58,30 +85,30 @@ public class PaymentService {
         try (Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
             response = (JSONObject) parser.parse(reader);
         }
+
+        log.info("토스 응답 바디: {}", response.toJSONString()); // ✅ 추가
+
         if (code == 200) {
-            // orderId로 주문 정보를 조회해 유저 번호(userNo) 알아내기
-            // (주의: orderId가 String이면 Long으로 파싱 필요)
-            Long orderId = Long.parseLong(req.getOrderId());
             Long userNo = orderMapper.findUserNoByOrderId(orderId);
 
             if (userNo != null) {
-                // 3. 유저 번호로 장바구니 찾기
                 Cart cart = cartMapper.findCartEntityByUserNo(userNo);
-
                 if (cart != null) {
-                    // 4. 이제 안전하게 cartId를 사용할 수 있습니다!
                     cartMapper.deleteAllCartItems(cart.getCartId());
                     cartMapper.deleteCart(cart.getCartId());
                 }
             }
         }
-        // 2. 실패 시 예외 처리
+
         if (code != 200) {
             throw new RuntimeException((String) response.get("message"));
         }
-
-        // 3. ✅ payment 테이블에 저장
+        OrderState orderState= new OrderState();
+        orderState.setState(2);
+        orderState.setOrderId(orderId);
+        //가게의 총주문수 +하는 로직짜야함
         PaymentEntity payment = new PaymentEntity();
+        orderMapper.updateState(orderState);
         payment.setOrderId(req.getOrderId());
         payment.setPaymentKey(req.getPaymentKey());
         payment.setAmount(req.getAmount());

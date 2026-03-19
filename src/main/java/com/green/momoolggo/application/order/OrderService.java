@@ -5,6 +5,7 @@ import com.green.momoolggo.application.cart.model.Cart;
 import com.green.momoolggo.application.cart.model.CartItemRes;
 import com.green.momoolggo.application.order.model.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,6 +101,31 @@ public class OrderService {
                     item.getPrice()
             );
         }
-
     return uniqueId ;}
+
+    //주문내역삭제
+    public int deleteOrder(long id){
+        return orderMapper.deleteOrder(id);
+    }
+
+
+    //주문내역조회
+     public List<OrderHistoryDto> getOrderHistory(OrderHistoryReq req){
+         // 1) 주문 목록 조회
+         List<OrderHistoryDto> orders = orderMapper.findOrdersByUserId(req);
+
+         // 2) 각 주문마다 메뉴 리스트 조회 후 세팅
+         for (OrderHistoryDto order : orders) {
+             List<OrderHistoryDto.OrderItemDto> items =
+                     orderMapper.findItemsByOrderId(order.getOrderId());
+             order.setItems(items);
+         }
+         return orders;
+     }
+
+     public OrderHistoryDto orderHistoryDetail(long id){
+        OrderHistoryDto result =orderMapper.orderHistoryDetail(id);
+        result.setItems(orderMapper.findItemsByOrderId(id));
+        return result;
+     }
 }
