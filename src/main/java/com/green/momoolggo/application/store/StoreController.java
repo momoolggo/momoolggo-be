@@ -67,5 +67,12 @@ public class StoreController {
         List<StoreGetRes> result = storeService.findNearbyStores(lat, lng);
         return new ResultResponse<>("주변 가게 조회 성공", result);
     }
+
+    //리뷰 조회
+    @GetMapping("/{id}/review")
+    public ResultResponse<?> getStoreReviews(@PathVariable long id) {
+        List<Map<String, Object>> result = storeService.getStoreReviews(id);
+        return new ResultResponse<>("리뷰 조회 성공", result);
+    }
 }
 

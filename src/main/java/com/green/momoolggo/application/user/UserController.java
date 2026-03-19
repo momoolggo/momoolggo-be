@@ -133,4 +133,22 @@ public class UserController {
         userService.deleteReview(principal.getSignedUserNo(), reviewId);
         return ResponseEntity.ok(Map.of("result", "삭제성공"));
     }
+
+    // 리뷰 단건 조회 (수정 시 기존 데이터 불러오기)
+    @GetMapping("/review/{reviewId}")
+    public ResponseEntity<?> getReviewById(@PathVariable long reviewId) {
+        return ResponseEntity.ok(userService.getReviewById(reviewId));
+    }
+
+    // 리뷰 수정
+    @PutMapping("/review/{reviewId}")
+    public ResponseEntity<?> updateReview(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable long reviewId,
+            @RequestBody Map<String, Object> body) {
+        int rating = Integer.parseInt(body.get("rating").toString());
+        String contents = body.get("contents").toString();
+        userService.updateReview(principal.getSignedUserNo(), reviewId, rating, contents);
+        return ResponseEntity.ok(Map.of("result", "수정성공"));
+    }
 }

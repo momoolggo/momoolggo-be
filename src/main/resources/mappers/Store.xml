@@ -132,4 +132,22 @@
         HAVING distance &lt;= 3
         ORDER BY distance ASC
     </select>
+
+    <select id="getStoreReviews" resultType="map">
+        SELECT
+            r.review_id  AS reviewId,
+            r.rating,
+            r.contents,
+            r.photo,
+            u.name       AS userName,
+            DATE_FORMAT(r.write_at, '%Y.%m.%d') AS date,
+        (SELECT GROUP_CONCAT(od.menu_name SEPARATOR ', ')
+         FROM order_detail od
+         WHERE od.order_id = r.order_id) AS menuName
+        FROM review r
+            JOIN orders o ON o.order_id = r.order_id
+            JOIN user u ON u.user_no = o.user_no
+        WHERE o.store_id = #{storeId}
+        ORDER BY r.write_at DESC
+    </select>
 </mapper>

@@ -16,6 +16,7 @@ public class OrderHistoryDto {
     private int deliveryFee;       // orders.delivery_fee
     private long orderId;          // orders.order_id
     private int orderState;        // orders.order_state
+    private int hasReview;
     private List<OrderItemDto> items;
 
    @Getter
