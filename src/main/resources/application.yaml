@@ -39,3 +39,7 @@ naver:
   map-client-id: l1ytziijx9
   search-client-id: Irz0Q0SbBNwf1to6Rjiy
   search-client-secret: LTSWa3axtJ
+file:
+  upload:
+    menu-path: C:/uploads/menu/
+    store-path: C:/uploads/store/
