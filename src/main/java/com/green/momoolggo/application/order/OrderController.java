@@ -6,6 +6,7 @@ import com.green.momoolggo.application.order.model.OrderInfoRes;
 import com.green.momoolggo.application.order.model.OrderReqDto;
 import com.green.momoolggo.configuration.model.ResultResponse;
 import com.green.momoolggo.configuration.model.UserPrincipal;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,17 +32,18 @@ public class OrderController {
 
     // 주문 확정
     @PostMapping
-    public ResponseEntity<?> placeOrder(
-            @AuthenticationPrincipal UserPrincipal principal,
+    public ResponseEntity<?> placeOrder(@AuthenticationPrincipal UserPrincipal principal,
             @RequestBody OrderReqDto dto) {
         long orderId = orderService.placeOrder(principal.getSignedUserNo(), dto);
+        orderService.calSumOrder(orderId);
         return ResponseEntity.ok(Map.of("result", "success","orderId", orderId));
     }
 
     @DeleteMapping("/{id}")
     public ResultResponse<?> deleteOrder(@PathVariable  long id){
         int result= orderService.deleteOrder(id);
-        return new ResultResponse<>(result==1 ? "삭제성공": "삭제실패", "dd");
+        orderService.calSumOrder(id);
+        return new ResultResponse<>(result==1 ? "삭제성공": "삭제실패", "ㅇㅇ");
     }
 
     //주문내역
@@ -55,4 +57,12 @@ public class OrderController {
     public ResponseEntity<OrderHistoryDto> orderHistoryDetail(@PathVariable long id){
         return ResponseEntity.ok(orderService.orderHistoryDetail(id));
     }
+    //주무내역 맥스페이지
+    @GetMapping("/history/max/{id}")
+    public ResultResponse<?> maxHistoryPage(@PathVariable long id){
+        int result = orderService.maxHistoryPage(id);
+        System.out.println(result);
+        return new ResultResponse<>("조회성공",result);
+    }
+
 }

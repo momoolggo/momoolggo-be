@@ -106,7 +106,6 @@ public class PaymentService {
         OrderState orderState= new OrderState();
         orderState.setState(2);
         orderState.setOrderId(orderId);
-        //가게의 총주문수 +하는 로직짜야함
         PaymentEntity payment = new PaymentEntity();
         orderMapper.updateState(orderState);
         payment.setOrderId(req.getOrderId());

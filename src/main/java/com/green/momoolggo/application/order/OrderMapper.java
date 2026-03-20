@@ -42,6 +42,8 @@ public interface OrderMapper {
     List<OrderHistoryDto> findOrdersByUserId(OrderHistoryReq req);           // 주문 목록
     List<OrderHistoryDto.OrderItemDto> findItemsByOrderId(Long orderId); // 메뉴 목록
     OrderHistoryDto orderHistoryDetail(long id);
+    int maxHistoryPage(long id);
 
 
+    int calSumOrder(long id);
 }
