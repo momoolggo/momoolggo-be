@@ -107,6 +107,7 @@
             )               AS date,
         s.store_name    AS storeName,
         s.store_pic     AS storeImage,
+        s.store_id      AS storeId,
         o.amount        AS totalPrice,
         o.delivery_fee  AS deliveryFee,
         o.order_state   AS orderState
@@ -114,6 +115,14 @@
             JOIN store s ON s.store_id = o.store_id
         WHERE o.order_id = #{id}
         ]]>
-
     </select>
+
+    <select id="maxHistoryPage">
+        select count(1) from orders where user_no=#{id}
+    </select>
+
+    <update id="calSumOrder">
+        update store set order_count = (select count(*) from orders where store_id = (select store_id from orders where order_id=#{id}) )
+        where store_id = (select store_id from orders where order_id=#{id})
+    </update>
 </mapper>
