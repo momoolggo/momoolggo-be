@@ -25,7 +25,7 @@ public class StoreService {
         return storeMapper.findOne(id);
     }
 
-    public List<MenuGetRes> menuListGet(long id){ return storeMapper.menuAll(id); }
+    public List<MenuGetRes> menuListGet(long id){ return storeMapper.menuAll(id);}
 
     @Transactional
     public boolean wishToggle(FavoriteToggleReq req){

@@ -128,4 +128,12 @@ public class OrderService {
         result.setItems(orderMapper.findItemsByOrderId(id));
         return result;
      }
+
+     public int maxHistoryPage(long id){
+        return orderMapper.maxHistoryPage(id);
+     }
+     // 가게 주문수 계산
+     public int calSumOrder(long id){
+        return orderMapper.calSumOrder(id);
+     }
 }
