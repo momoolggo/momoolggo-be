@@ -22,6 +22,12 @@ public class StoreController {
             System.out.println(result);
         return new ResultResponse<>("ㅇ", result);
     }
+    @GetMapping("max_page")//가게 최대페이지
+    public ResultResponse<?> getMaxPage(@ModelAttribute StoreGetReq req){
+        int result = storeService.getMaxPage(req);
+        return new ResultResponse<>("",result);
+    }
+
 
     @GetMapping("/{id}") //가게 상세정보
     public ResultResponse<?> StoreOneGet(@PathVariable long id){
