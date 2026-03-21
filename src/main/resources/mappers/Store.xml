@@ -52,6 +52,18 @@
         ORDER BY c.category_order ASC, m.menu_order ASC
     </select>
 
+    <select id="getMaxPage">
+        select count(1) from store s join store_category c on c.store_id=s.store_id
+        <where>
+        <if test="searchText != null and searchText != ''">
+        AND s.store_name LIKE CONCAT('%', #{searchText}, '%')
+        </if>
+        <if test="categoryId != null and categoryId != 0">
+            AND c.category_id = #{categoryId}
+        </if>
+        </where>
+    </select>
+
     <select id="searchStore">
         SELECT distinct s.store_id AS id, s.store_name AS name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic AS pic, s.state
         FROM store s

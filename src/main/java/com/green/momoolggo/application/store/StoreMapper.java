@@ -13,6 +13,7 @@ public interface StoreMapper {
     List<StoreGetRes> findAll(StoreGetReq req);
     StoreOneGetRes findOne(long id);
     List<MenuGetRes> menuAll(long id);
+    int getMaxPage(StoreGetReq req);
     List<StoreGetRes> favoriteList( StoreFavoriteReq req);
     int favoriteCount(long id);
     int checkWish(FavoriteToggleReq req);

@@ -25,6 +25,10 @@ public class StoreService {
         return storeMapper.findOne(id);
     }
 
+    public int  getMaxPage (StoreGetReq req){
+        return storeMapper.getMaxPage(req);
+    }
+
     public List<MenuGetRes> menuListGet(long id){ return storeMapper.menuAll(id);}
 
     @Transactional
