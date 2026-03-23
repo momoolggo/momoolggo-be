@@ -17,4 +17,6 @@ public class OwnerOrderRes {
     private String state;       // orderState(int) -> state(String) 로 변경 (DB가 PENDING, WATING 문자열이라서)
     private String address;
     private String request;
+    private String customerName;
+    private String tel;
 }
