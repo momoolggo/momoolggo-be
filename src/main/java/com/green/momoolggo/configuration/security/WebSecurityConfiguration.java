@@ -17,7 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 // Spring Security 전체 설정을 담당하는 클래스
-// 어떤 요청을 허용/차단할지, 어떤 필터를 거칠지 정의함
+// 차단할 것만 명시하고, 나머지는 전부 허용하는 블랙리스트 방식
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfiguration {
@@ -28,7 +28,7 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 이 줄을 추가하세요!
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // JWT 사용 → 서버에서 세션을 만들지 않음
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Spring Security 기본 로그인 화면 비활성화
@@ -40,41 +40,23 @@ public class WebSecurityConfiguration {
 
                 .authorizeHttpRequests(req -> req
 
-                        // ── 인증 없이 허용 (비로그인도 가능)
-                        .requestMatchers(HttpMethod.POST, "/api/user/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/user/check-id").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/user/join").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/address/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/map/key").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/user/me").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/address/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/user/reissue").permitAll()
+                        // ── OWNER 전용 (사장만 접근 가능) ──
+                        .requestMatchers("/api/owner/**").hasRole("OWNER")
 
-                        // 가게/메뉴/카테고리/리뷰 조회는 비로그인도 가능
-                        .requestMatchers(HttpMethod.GET, "/api/store").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/store/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/menu").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/menu/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/category").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/review/**").permitAll()
+                        // ── CUSTOMER 전용 (고객만 접근 가능) ──
+                        .requestMatchers("/api/cart/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/order/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/favorite/**").hasRole("CUSTOMER")
 
+                        // ── 로그인 필수 (역할 무관) ──
+                        .requestMatchers(HttpMethod.POST, "/api/review/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/user/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/user/**").authenticated()
 
-
-                        // 내 정보 조회 (Vue 역할 분기용)
-                        .requestMatchers(HttpMethod.GET, "/api/user/me").permitAll()
-
-                        .requestMatchers(HttpMethod.GET, "/api/owner/menu").permitAll()
-
-                        // ── OWNER 전용 (사장만 가능)
-                        // /api/owner/** 로 시작하는 모든 요청은 OWNER 역할만 접근 가능
-                        .requestMatchers("/api/owner/**").permitAll()
-
-                        // ── 나머지 요청은 로그인 필수
-                        // (유저 조회/수정, 찜, 장바구니, 주문, 리뷰 작성 등)
-                        .anyRequest().authenticated()
+                        // ── 나머지는 전부 허용 ──
+                        .anyRequest().permitAll()
                 )
                 // Spring Security 기본 로그인 필터 앞에 JWT 필터를 끼워 넣음
-                // 요청이 들어오면 TokenAuthenticationFilter → 나머지 필터 순서로 실행
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -84,7 +66,7 @@ public class WebSecurityConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         // 프론트엔드 주소 허용
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        // 허용할 HTTP 메서드 (POST를 포함해야 합니다)
+        // 허용할 HTTP 메서드
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // 모든 헤더 허용
         configuration.setAllowedHeaders(Arrays.asList("*"));
@@ -97,8 +79,6 @@ public class WebSecurityConfiguration {
     }
 
     // 비밀번호 암호화에 사용할 인코더 빈 등록
-    // BCrypt : 현존 가장 안전한 단방향 암호화 알고리즘
-    // UserService 에서 passwordEncoder.encode() / .matches() 로 사용함
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
