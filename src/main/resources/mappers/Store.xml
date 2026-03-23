@@ -4,29 +4,23 @@
 
 <mapper namespace="com.green.momoolggo.application.store.StoreMapper">
 
-
-<!--    <select id="findMaxPage">-->
-<!--        SELECT ceil(COUNT(1) / #{size}) FROM store-->
-<!--        <if test=" searchText != null and searchText != '' ">-->
-<!--            WHERE title LIKE '%${searchText}%'-->
-<!--            OR contents LIKE '%${searchText}%'-->
-<!--        </if>-->
-<!--    </select>-->
-
-    <select id="findAll"> <!--가게목록리스트-->
-    SELECT s.store_id id , s.store_name name, s.min_price min, s.rating_avg avg, s.rating_count sum, s.order_count count, s.store_pic pic, s.state
-    FROM store s join store_category c on s.store_id=c.store_id
-    <where>
-        <if test="searchText != null and searchText != ''">
-            AND s.store_name LIKE CONCAT('%', #{searchText}, '%')
-        </if>
-        <if test="categoryId != null and categoryId != 0">
-            AND c.category_id = #{categoryId}
-        </if>
-    </where>
-    ORDER BY s.order_count DESC
-    LIMIT #{startIdx}, #{size}
+    <select id="findAll">
+        SELECT s.store_id id, s.store_name name, s.min_price min,
+        s.rating_avg avg, s.rating_count sum, s.order_count count,
+        s.store_pic pic, s.state, s.created_at createdAt
+        FROM store s join store_category c on s.store_id=c.store_id
+        <where>
+            <if test="searchText != null and searchText != ''">
+                AND s.store_name LIKE CONCAT('%', #{searchText}, '%')
+            </if>
+            <if test="categoryId != null and categoryId != 0">
+                AND c.category_id = #{categoryId}
+            </if>
+        </where>
+        ORDER BY s.${sortType} ${sortOrder}
+        LIMIT #{startIdx}, #{size}
     </select>
+
 
     <select id="findOne">
         SELECT
