@@ -41,5 +41,5 @@ naver:
   search-client-secret: LTSWa3axtJ
 file:
   upload:
-    menu-path: C:/uploads/menu/
-    store-path: C:/uploads/store/
+    menu-path: ${MENU_UPLOAD_PATH}
+    store-path: ${STORE_UPLOAD_PATH}
