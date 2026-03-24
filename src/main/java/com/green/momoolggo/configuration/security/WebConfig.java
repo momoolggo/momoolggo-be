@@ -6,15 +6,26 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${file.upload.menu-path}")
+    private String menuUploadPath;
+
+    @Value("${file.upload.store-path}")
+    private String storeUploadPath;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:///C:/uploads/");
+        registry.addResourceHandler("/uploads/menu/**")
+                .addResourceLocations("file:///" + menuUploadPath);
+
+        registry.addResourceHandler("/uploads/store/**")
+                .addResourceLocations("file:///" + storeUploadPath);
 
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
